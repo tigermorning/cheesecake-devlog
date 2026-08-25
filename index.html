@@ -790,6 +790,68 @@
       </div>
     </div>
 
+    <div class="case sourced">
+      <div class="head">
+        <span class="hash">코드만 확인</span>
+        <span class="hash" id="case-5e11fba" style="background:none;padding:0;font-weight:400">(5e11fba)</span>
+        <span class="sym">SPUM Studio 캐릭터 저장소 손상</span>
+      </div>
+      <div class="body">
+        <div>
+          <div class="lbl">증상</div>
+          <p>Cast Editor가 "캐릭터가 없습니다"를 띄우고 원본 캐릭터 5종까지 안 보임.
+          콘솔에 <code class="file">[Animator] No animation for state: IDLE</code>.</p>
+        </div>
+        <div>
+          <div class="lbl">원인 · 조치</div>
+          <p><code class="file">sv_studio_characters_v1</code>는 배열인데 주입 스크립트가
+          스프레드 병합으로 객체(map)로 바꿔놔 Studio 파싱이 실패했고, schemaVersion 2
+          필드(animation 등)도 안 채워졌다. 원본 캐릭터를 템플릿으로 통째 복제해 스키마를
+          상속하는 <code class="file">repair-characters.mjs</code>로 교체(그 스크립트가 repo에
+          실제로 있는 것까지 재확인). 이 사고 이후 "캐스트 배치만은 코드로 하지 말라"가 팀
+          CLAUDE.md 의 확정 규칙이 됐다. <strong>다만 복구 후 Studio에서 캐릭터 5종이 실제로
+          다시 보이는지 재현 확인한 기록은 없다</strong> — 코드만 확인.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="case sourced" id="case-maze-poc-fields">
+      <div class="head">
+        <span class="hash">출처만 확인</span>
+        <span class="sym">SPUM 자체 재질을 써도 "충돌 여부" 필드가 미끼였다</span>
+      </div>
+      <div class="body">
+        <div>
+          <div class="lbl">의아했던 점</div>
+          <p>AI로 그린 커스텀 재질이 아니라 <strong>SPUM 라이브러리가 이미 구워 둔 공식 테마
+          타일</strong>로만 미로를 만들었는데도, 처음엔 벽과 캐릭터가 충돌하지 않았다. 타일
+          이름 자체는 이미 <code class="file">category:'obstacle_blocking'</code> 처럼 재질
+          구분이 돼 있었는데 — 그런데도 왜 안 막혔을까?</p>
+        </div>
+        <div>
+          <div class="lbl">원인(출처: 별도 저장소 <code class="file">spum-maze-poc</code>)</div>
+          <p>그 저장소의 런타임 소스 추적 기록에 따르면, 벽 타일에는 비슷하게 생긴 필드가 두 개
+          있었다 — <code class="file">blocksMovement</code>(직관적으로 "이게 충돌 여부겠지" 싶은
+          이름)와 <code class="file">movement:'blocked'</code>(진짜 판정에 쓰이는 값). 기본
+          테마에서 <code class="file">blocksMovement</code>는 <strong>10종 벽 전부 false</strong>
+          — 이 필드만 보면 "이 게임엔 충돌하는 벽이 하나도 없다"는 잘못된 결론이 나온다. 진짜는
+          <code class="file">movement</code> 쪽이었다. 그 저장소의 <code class="file">EVIDENCE.md</code>에
+          줄 번호까지 남아 있고, 그 검증이 최종 게임의 길찾기/충돌 설계 신뢰를 뒷받침했다
+          (<a href="#lineage">§05 개발 계보</a>). <strong>다만 이 값이 지금도 유효한지 who-ate-
+          my-cheesecake 쪽에서 클로드로 SPUM Studio를 다시 조작해 캐릭터-벽 충돌을 직접
+          재확인하지는 않았다</strong> — 그래서 "해결됨"이 아니라 "출처만 확인"이다.</p>
+        </div>
+      </div>
+      <div class="card mono" style="font-size:12.5px; line-height:1.9; color:var(--ink-dim); margin-top:14px;">
+        벽 타일 하나의 실제 필드 값(기본 테마)<br>
+        <code style="background:none;padding:0">category: "obstacle_blocking"</code> ·
+        <code style="background:none;padding:0">movement: "blocked"</code>
+        <span style="color:var(--accent2)">← 진짜 이걸 봐야 함</span><br>
+        <code style="background:none;padding:0">blocksMovement: false</code>
+        <span style="color:var(--danger)">← 이름은 그럴싸한데 이 테마에선 전부 거짓, 믿으면 안 됨</span>
+      </div>
+    </div>
+
     <div class="case fixed" id="case-harvest-sam">
       <div class="head">
         <span class="hash">2c491e8 · 08fbafa</span>
@@ -903,68 +965,6 @@
         <strong>무한정</strong> 계속됨<br>
         <span style="color:var(--accent2)">수정 후</span> 1회(21초 뒤)→2회(31.5초 뒤)→3회(42초 뒤)→
         4회(52.5초 뒤) → <strong>그 뒤로는 안 함</strong>
-      </div>
-    </div>
-
-    <div class="case sourced">
-      <div class="head">
-        <span class="hash">코드만 확인</span>
-        <span class="hash" id="case-5e11fba" style="background:none;padding:0;font-weight:400">(5e11fba)</span>
-        <span class="sym">SPUM Studio 캐릭터 저장소 손상</span>
-      </div>
-      <div class="body">
-        <div>
-          <div class="lbl">증상</div>
-          <p>Cast Editor가 "캐릭터가 없습니다"를 띄우고 원본 캐릭터 5종까지 안 보임.
-          콘솔에 <code class="file">[Animator] No animation for state: IDLE</code>.</p>
-        </div>
-        <div>
-          <div class="lbl">원인 · 조치</div>
-          <p><code class="file">sv_studio_characters_v1</code>는 배열인데 주입 스크립트가
-          스프레드 병합으로 객체(map)로 바꿔놔 Studio 파싱이 실패했고, schemaVersion 2
-          필드(animation 등)도 안 채워졌다. 원본 캐릭터를 템플릿으로 통째 복제해 스키마를
-          상속하는 <code class="file">repair-characters.mjs</code>로 교체(그 스크립트가 repo에
-          실제로 있는 것까지 재확인). 이 사고 이후 "캐스트 배치만은 코드로 하지 말라"가 팀
-          CLAUDE.md 의 확정 규칙이 됐다. <strong>다만 복구 후 Studio에서 캐릭터 5종이 실제로
-          다시 보이는지 재현 확인한 기록은 없다</strong> — 코드만 확인.</p>
-        </div>
-      </div>
-    </div>
-
-    <div class="case sourced" id="case-maze-poc-fields">
-      <div class="head">
-        <span class="hash">출처만 확인</span>
-        <span class="sym">SPUM 자체 재질을 써도 "충돌 여부" 필드가 미끼였다</span>
-      </div>
-      <div class="body">
-        <div>
-          <div class="lbl">의아했던 점</div>
-          <p>AI로 그린 커스텀 재질이 아니라 <strong>SPUM 라이브러리가 이미 구워 둔 공식 테마
-          타일</strong>로만 미로를 만들었는데도, 처음엔 벽과 캐릭터가 충돌하지 않았다. 타일
-          이름 자체는 이미 <code class="file">category:'obstacle_blocking'</code> 처럼 재질
-          구분이 돼 있었는데 — 그런데도 왜 안 막혔을까?</p>
-        </div>
-        <div>
-          <div class="lbl">원인(출처: 별도 저장소 <code class="file">spum-maze-poc</code>)</div>
-          <p>그 저장소의 런타임 소스 추적 기록에 따르면, 벽 타일에는 비슷하게 생긴 필드가 두 개
-          있었다 — <code class="file">blocksMovement</code>(직관적으로 "이게 충돌 여부겠지" 싶은
-          이름)와 <code class="file">movement:'blocked'</code>(진짜 판정에 쓰이는 값). 기본
-          테마에서 <code class="file">blocksMovement</code>는 <strong>10종 벽 전부 false</strong>
-          — 이 필드만 보면 "이 게임엔 충돌하는 벽이 하나도 없다"는 잘못된 결론이 나온다. 진짜는
-          <code class="file">movement</code> 쪽이었다. 그 저장소의 <code class="file">EVIDENCE.md</code>에
-          줄 번호까지 남아 있고, 그 검증이 최종 게임의 길찾기/충돌 설계 신뢰를 뒷받침했다
-          (<a href="#lineage">§05 개발 계보</a>). <strong>다만 이 값이 지금도 유효한지 who-ate-
-          my-cheesecake 쪽에서 클로드로 SPUM Studio를 다시 조작해 캐릭터-벽 충돌을 직접
-          재확인하지는 않았다</strong> — 그래서 "해결됨"이 아니라 "출처만 확인"이다.</p>
-        </div>
-      </div>
-      <div class="card mono" style="font-size:12.5px; line-height:1.9; color:var(--ink-dim); margin-top:14px;">
-        벽 타일 하나의 실제 필드 값(기본 테마)<br>
-        <code style="background:none;padding:0">category: "obstacle_blocking"</code> ·
-        <code style="background:none;padding:0">movement: "blocked"</code>
-        <span style="color:var(--accent2)">← 진짜 이걸 봐야 함</span><br>
-        <code style="background:none;padding:0">blocksMovement: false</code>
-        <span style="color:var(--danger)">← 이름은 그럴싸한데 이 테마에선 전부 거짓, 믿으면 안 됨</span>
       </div>
     </div>
 
@@ -1103,7 +1103,8 @@
         떼어 각자만 검사 → 둘 다 참으로 정확히 판정
       </div>
     </div>
-  </section>
+
+    </section>
 
   <section id="tests">
     <h2><span class="no">07</span> 검증 · 테스트</h2>
