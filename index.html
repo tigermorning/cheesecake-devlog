@@ -453,7 +453,7 @@
         <tr><td><a class="file" style="text-decoration:none" href="https://github.com/tigermorning/who-ate-my-cheesecake/blob/feat/character-system/spum/harness.mjs" target="_blank" rel="noopener"><code class="file">spum/harness.mjs</code></a></td><td>검증</td>
             <td><code class="file">node spum/harness.mjs --live</code> 로 SAM 실호출 검증 재현 가능</td></tr>
         <tr><td><a class="file" style="text-decoration:none" href="https://github.com/tigermorning/who-ate-my-cheesecake/blob/feat/character-system/spum/verify-dialogue-fixes.mjs" target="_blank" rel="noopener"><code class="file">spum/verify-dialogue-fixes.mjs</code></a></td><td>회귀 검증</td>
-            <td>인젝션 가드·harvest 확인형 이어받기를 실제 SAM 호출로 재현(<a href="#case-injection-guard">§06</a>)</td></tr>
+            <td>인젝션 가드·harvest 정밀도/재현율(11케이스)을 실제 SAM 호출로 재현(<a href="#case-injection-guard">§06</a>)</td></tr>
         <tr><td><a class="file" style="text-decoration:none" href="https://github.com/tigermorning/who-ate-my-cheesecake/blob/feat/character-system/spum/cast.json" target="_blank" rel="noopener"><code class="file">spum/cast.json</code></a></td><td>캐릭터 정본 (<a href="#case-5e11fba">저장소 손상 사고</a> 있었음)</td>
             <td>SPUM Cast 스키마 + <code class="file">persona.profile</code></td></tr>
         <tr><td><a class="file" style="text-decoration:none" href="https://github.com/tigermorning/who-ate-my-cheesecake/tree/feat/character-system/spum/legacy" target="_blank" rel="noopener"><code class="file">spum/legacy/</code></a></td><td>폐기 경로</td>
@@ -584,7 +584,7 @@
         </div>
       </div>
       <div>
-        <span class="pill accent2">해결됨 9건</span> — 이 프로젝트에서 실제 재현·검증까지 마침
+        <span class="pill accent2">해결됨 10건</span> — 이 프로젝트에서 실제 재현·검증까지 마침
         <div style="margin-top:4px; color:var(--ink-dim)">
           <a href="#case-solo-dialogue">혼자 대화체로 말하는 문제</a> ·
           <a href="#case-harvest-sam">증언판 오귀속(구조 전환)</a> ·
@@ -593,6 +593,7 @@
           <a href="#case-07fb774">근접 소문 무한반복</a> ·
           <a href="#case-grid-inversion">벽 위 걷기(기반 버그 2개)</a> ·
           <a href="#case-culprit-confession">범인 자백 검증 통과</a> ·
+          <a href="#case-negation-precision">부정문 오지목(정밀도/재현율)</a> ·
           <a href="#case-injection-guard">인젝션 가드</a> ·
           <a href="#case-violation-tradeoff">위반 오탐·누락</a>
         </div>
@@ -1039,6 +1040,37 @@
         말하지 마라)" <span style="color:var(--ink-faint)">← 지시만 있고 진짜 정보는 그대로 보임</span><br>
         <span style="color:var(--accent2)">수정 후</span> 코코 프롬프트: "21시엔 거실에 있었다"
         <span style="color:var(--ink-faint)">(알리바이 거짓말로 통째 교체 — 진짜 자리는 코코도 못 봄)</span>
+      </div>
+    </div>
+
+    <div class="case fixed" id="case-negation-precision">
+      <div class="head">
+        <span class="hash">9c2df7e</span>
+        <span class="sym">harvest()가 부정문("없었어")을 긍정 위치 사실로 오지목하던 버그</span>
+      </div>
+      <div class="body">
+        <div>
+          <div class="lbl">증상</div>
+          <p>정밀도/재현율을 분리 측정해보기 전에는 몰랐던 문제. "아니, 거기 없었어" 같은
+          부정 답을 <code class="file">buildHarvestMessages()</code>가 <strong>긍정 확인과
+          똑같이 취급</strong>해 hour/room을 채운 사실을 만들어냈다 — "그 시각 그 자리에
+          없었다"는 말이 "있었다"는 증언으로 증언판에 둔갑할 수 있는 위험이었다.</p>
+        </div>
+        <div>
+          <div class="lbl">원인 · 조치</div>
+          <p>규칙 문구 자체가 원인이었다 — "'있었어'/'없었어'/'봤어' 류로 확인"이라고 써서
+          부정을 긍정과 한 묶음으로 지시하고 있었다. 부정 답은 항목을 아예 안 만들게 분리하고,
+          [방금 물어본 시각·방]이 하나만 있어도 나머지를 새 값과 합치는 부분 이어받기 예시도
+          추가했다(재현율 갭 하나 더 발견). 정밀도/재현율 프레임은 output-format-and-metrics
+          블로그(F1 분리 평가) 적용.</p>
+        </div>
+      </div>
+      <div class="card mono" style="font-size:12.5px; line-height:1.9; color:var(--ink-dim); margin-top:14px;">
+        <code style="background:none;padding:0">spum/verify-dialogue-fixes.mjs</code> 11케이스 재현 검증<br>
+        <span style="color:var(--danger)">수정 전</span> 정밀도 75% · 재현율 86% · F1 80%
+        (TP=6 FP=2 FN=1) — "아니, 거기 없었어" → 잘못 채워진 hour/room<br>
+        <span style="color:var(--accent2)">수정 후</span> 정밀도 100% · 재현율 100% · F1 100%
+        (11/11), harness.mjs 43/43 회귀 없음
       </div>
     </div>
 
