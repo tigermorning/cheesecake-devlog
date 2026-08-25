@@ -193,8 +193,9 @@
   .callout{
     display:grid; grid-template-columns:auto 1fr; align-items:start; column-gap:12px; row-gap:10px;
     padding:16px 18px; border-radius:10px; background:var(--accent2-soft);
-    border:1px solid transparent; margin-bottom:16px; max-width:700px;
+    border:1px solid transparent; margin-bottom:16px;
   }
+  .callout p{ max-width:none; }
   .callout .ico{ grid-column:1; grid-row:1; font-size:18px; line-height:1.4; }
   .callout p{ grid-column:2; margin:0; font-size:14px; color:var(--ink); }
   .callout.warn{ background:var(--danger-soft); }
@@ -754,6 +755,33 @@
           필드(animation 등)도 안 채워졌다. 원본 캐릭터를 템플릿으로 통째 복제해 스키마를
           상속하는 <code class="file">repair-characters.mjs</code>로 교체. 이 사고 이후
           "캐스트 배치만은 코드로 하지 말라"가 팀 CLAUDE.md 의 확정 규칙이 됐다.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="case" id="case-classify-expectation">
+      <div class="head">
+        <span class="hash">원인 미확인</span>
+        <span class="sym">Object Editor의 AI 분류가 walkable/block까지 자동으로 이어줄 거라 기대했는데 안 됐다</span>
+      </div>
+      <div class="body">
+        <div>
+          <div class="lbl">기대</div>
+          <p>Object Editor의 Classify 단계는 타일마다 category(<code class="file">floor /
+          obstacle_blocking / obstacle_slowing / item / decoration</code>)와 movement
+          (<code class="file">passable / blocked / slowed / none</code>)를 AI가 매겨준다
+          (<code class="file">docs/SPUM_RESOURCE_AUDIT.md</code>). 벽 재질로 만든 오브젝트는
+          자동으로 block, 바닥 재질은 walkable로 이어질 거라 예상했고, Claude 확장(브라우저
+          자동화)으로 SPUM Studio를 조작해 이 과정 전체를 자동화하려 했다.</p>
+        </div>
+        <div>
+          <div class="lbl">실제 · 원인 미확인</div>
+          <p>기대만큼 안 됐다 — 클로드가 처리하지 못한 부분은 결국 SPUM Studio를 직접 손으로
+          조작해 walkable/block을 지정했다(그 결과물이 바로 아래 <a href="#case-grid-inversion">
+          §기반 버그 2개</a>에서 "내가 직접 칠한 obstacle 값"이다). <strong>정확히 어느 지점에서
+          막혔는지는 확인하지 않았다</strong> — (a) Classify의 AI 분류 정확도 자체가 낮았는지,
+          (b) 브라우저 자동화가 타일 개수만큼 끝까지 못 돌았는지, (c) Object의 category/movement 값이 애초에 Map Editor의 NAV 레이어에
+          자동으로 안 이어지는 구조였는지 — 셋 다 가능성만 있고 재현·검증은 안 했다.</p>
         </div>
       </div>
     </div>
