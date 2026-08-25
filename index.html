@@ -157,14 +157,15 @@
   .case{
     background:var(--bg-panel); border:1px solid var(--line); border-radius:10px;
     padding:20px 24px; margin-bottom:14px; box-shadow:var(--shadow);
-    border-left:3px solid var(--danger);
+    border-left:7px solid var(--danger);
   }
   .case.fixed{ border-left-color:var(--accent2); }
   .case .head{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:10px; }
   .case .hash{
-    font-family:'JetBrains Mono',monospace; font-size:12.5px; background:var(--code-bg); color:var(--code-ink);
-    padding:2px 8px; border-radius:4px; text-decoration:none;
+    font-family:'JetBrains Mono',monospace; font-size:12.5px; background:var(--danger-soft); color:var(--danger);
+    padding:2px 8px; border-radius:4px; text-decoration:none; font-weight:600;
   }
+  .case.fixed .hash{ background:var(--accent2-soft); color:var(--accent2); }
   a.case-hash:hover{ text-decoration:underline; }
   .case .sym{ font-weight:700; font-size:15px; }
   .case .body{ display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:16px 24px; }
@@ -569,6 +570,13 @@
           여전히 나타난다</strong> — 완전히 고쳐지지 않았다.</p>
         </div>
       </div>
+      <div class="card mono" style="font-size:12.5px; line-height:1.9; color:var(--ink-dim); margin-top:14px;">
+        예시(증상 재구성 — 실제 캡처 아님): 미누가 화면에 혼자 서 있다. 옆엔 아무도 없다.<br>
+        미누 말풍선: <span style="color:var(--danger)">"그래서 그다음엔 어떻게 됐어?"</span>
+        <span style="color:var(--ink-faint)">← 누구한테 묻는 거야? 상대가 없다.</span><br>
+        기대하는 모습: 같은 상황이면 <span style="color:var(--accent2)">"음... 그다음엔 어떻게 됐더라"</span>
+        같은 혼잣말투로 나와야 한다.
+      </div>
       <p style="margin-top:14px; font-size:13.5px; color:var(--ink-dim)"><strong>이게 가장 중요한
       미해결 문제인 이유</strong> — 순순팩토리가 요구한 건 "멋있는 게임"이 아니라 "interactive한
       게임"이다. 대화가 실제로 자연스럽고 상호작용처럼 느껴지는지가 핵심 평가 기준인데, 정확히
@@ -593,6 +601,12 @@
           필드를 추가해 대화 중인 NPC는 건너뛰게 했다.</p>
         </div>
       </div>
+      <div class="card mono" style="font-size:12.5px; line-height:1.9; color:var(--ink-dim); margin-top:14px;">
+        예시: 플레이어가 미누와 대화 중, 화면 시각이 21시→22시로 넘어가는 순간<br>
+        <span style="color:var(--danger)">수정 전</span> 미누가 대화창을 놔둔 채 22시 배정 방(텃밭)으로 혼자 걸어가버림
+        <span style="color:var(--ink-faint)">← 플레이어만 빈 화면에 남음</span><br>
+        <span style="color:var(--accent2)">수정 후</span> 미누는 대화가 끝날 때까지 그 자리에 머묾, 대화 종료 후에야 이동 재개
+      </div>
     </div>
 
     <div class="case fixed">
@@ -613,6 +627,13 @@
           신설. 말풍선 노출시간 16s→7s, 발화 간격 4s→6.5s로 완화.</p>
         </div>
       </div>
+      <div class="card mono" style="font-size:12.5px; line-height:1.9; color:var(--ink-dim); margin-top:14px;">
+        예시: 옆에 아무도 없는 코코가 어젯밤 일이 떠올라 혼자 있는 상황<br>
+        <span style="color:var(--danger)">수정 전</span> "그거 진짜 이상했죠?"
+        <span style="color:var(--ink-faint)">← 존댓말 되묻기, 상대가 있어야 성립하는 말투</span><br>
+        <span style="color:var(--accent2)">수정 후</span> "그거 진짜 이상했는데..."
+        <span style="color:var(--ink-faint)">(thought 프레이밍 — 혼잣말투로 전환)</span>
+      </div>
     </div>
 
     <div class="case fixed">
@@ -632,6 +653,13 @@
           "이 방 자기 위치 전까지"로 정정. 여러 시각·방이 한 문장에 섞일 때의 파싱은
           이 프로젝트에서 반복적으로 까다로웠던 지점(아래 SAM 응답 검증 참고).</p>
         </div>
+      </div>
+      <div class="card mono" style="font-size:12.5px; line-height:1.9; color:var(--ink-dim); margin-top:14px;">
+        입력: "21시엔 헛간, 22시엔 서재였어"<br>
+        <span style="color:var(--danger)">수정 전</span> 증언판: 21시=헛간, <u>22시=헛간</u>, 22시=서재
+        <span style="color:var(--ink-faint)">← 헛간이 두 번 잘못 찍힘</span><br>
+        <span style="color:var(--accent2)">수정 후</span> 증언판: 21시=헛간, 22시=서재
+        <span style="color:var(--ink-faint)">(정확히 둘만)</span>
       </div>
     </div>
 
@@ -656,6 +684,13 @@
           것도 잡아, 방금 물어본 시각·방을 SAM에게 명시적으로 같이 건네주도록 고쳤다.</p>
         </div>
       </div>
+      <div class="card mono" style="font-size:12.5px; line-height:1.9; color:var(--ink-dim); margin-top:14px;">
+        플레이어: "22시에 부엌에 너 말고 누구 없었어?" → 미누: "루루 있었어"<br>
+        <span style="color:var(--danger)">수정 전</span> 증언판: (빈칸)
+        <span style="color:var(--ink-faint)">← "루루 있었어"엔 시각·방 단어가 없어서 통째로 버려짐</span><br>
+        <span style="color:var(--accent2)">수정 후</span> 증언판: 루루, 22시, 부엌
+        <span style="color:var(--ink-faint)">(방금 물어본 시각·방을 SAM에게 같이 건네줌)</span>
+      </div>
     </div>
 
     <div class="case fixed" id="case-103261a">
@@ -675,6 +710,13 @@
           <code class="file">normalizeSamBody()</code> 신설: 빈/없는 model 채움, prompt→messages
           변환, max_tokens 기본값. 검증: 빈 model / model 없음 두 경우 모두 200 확인.</p>
         </div>
+      </div>
+      <div class="card mono" style="font-size:12.5px; line-height:1.9; color:var(--ink-dim); margin-top:14px;">
+        <span style="color:var(--danger)">수정 전</span> 요청 <code style="background:none;padding:0">{"model":"", "prompt":"..."}</code>
+        → 응답 <code style="background:none;padding:0">404 Unknown model: ''</code><br>
+        <span style="color:var(--accent2)">수정 후</span> 같은 요청이 <code style="background:none;padding:0">normalizeSamBody()</code>를
+        거쳐 <code style="background:none;padding:0">{"model":"claude-sonnet-4.6", "messages":[...]}</code>로 보정 →
+        <code style="background:none;padding:0">200</code>
       </div>
     </div>
 
@@ -699,6 +741,12 @@
           직접 재현해 서버가 안 죽는 것 확인.</p>
         </div>
       </div>
+      <div class="card mono" style="font-size:12.5px; line-height:1.9; color:var(--ink-dim); margin-top:14px;">
+        <span style="color:var(--danger)">수정 전</span> <code style="background:none;padding:0">curl http://서버/%</code> 한 번 →
+        서버 프로세스 전체가 죽음 → 그 순간부터 <strong>모든 사용자</strong>가 접속 불가<br>
+        <span style="color:var(--accent2)">수정 후</span> 같은 요청은 try/catch에 잡혀 그 요청 하나만 에러 응답,
+        서버는 계속 돌아감
+      </div>
     </div>
 
     <div class="case fixed">
@@ -718,6 +766,13 @@
           SAM·브라우저 없이 순수 로직 시뮬레이션으로 20분 최악 케이스에서 정확히 4회에
           멈추는 것을 확인.</p>
         </div>
+      </div>
+      <div class="card mono" style="font-size:12.5px; line-height:1.9; color:var(--ink-dim); margin-top:14px;">
+        미누·루루가 마주칠 때마다 소문을 나눔 —
+        <span style="color:var(--danger)">수정 전</span> 1회, 2회, 3회... 나눌 소재가 있는 한
+        <strong>무한정</strong> 계속됨<br>
+        <span style="color:var(--accent2)">수정 후</span> 1회(21초 뒤)→2회(31.5초 뒤)→3회(42초 뒤)→
+        4회(52.5초 뒤) → <strong>그 뒤로는 안 함</strong>
       </div>
     </div>
 
@@ -769,6 +824,13 @@
           (b) 브라우저 자동화가 타일 개수만큼 끝까지 못 돌았는지, (c) Object의 category/movement 값이 애초에 Map Editor의 NAV 레이어에
           자동으로 안 이어지는 구조였는지 — 셋 다 가능성만 있고 재현·검증은 안 했다.</p>
         </div>
+      </div>
+      <div class="card mono" style="font-size:12.5px; line-height:1.9; color:var(--ink-dim); margin-top:14px;">
+        기대했던 것: 벽 타일 이미지 하나를 Classify에 넣으면 →
+        <code style="background:none;padding:0">{"category":"obstacle_blocking","movement":"blocked"}</code>
+        가 자동으로 나오고, 그 값이 곧 Map Editor의 벽 판정이 됨<br>
+        실제로 한 일: 이 자동 연결을 못 믿어서, 결과적으로 <strong>Map Editor에서 칸마다
+        walkable/block을 직접 클릭해서 칠함</strong>
       </div>
     </div>
 
@@ -861,19 +923,47 @@
       </div>
     </div>
 
-    <h3 id="case-violation-tradeoff">풀어낸 문제 — 참을 거짓으로 잘못 잡거나, 거짓을 놓치거나</h3>
-    <p>한 문장에 여러 시각이 나올 때 어느 시각과 어느 방이 짝인지 정하는 문제. 처음엔 문장 안
-    시각 N개 × 방 N개를 전부 곱해서 검사했더니, 승인된 두 쌍을 한 문장에 같이 말하기만 해도
-    ("21시엔 텃밭, 22시엔 거실이었어") 존재하지 않는 교차 조합까지 위반으로 잘못 잡아냈다. 시각
-    등장 위치를 경계로 문장을 구간 나누는 방식으로 바꿔, 500판 표본 기준 <strong>참인 문장을
-    거짓으로 잘못 잡아낸 비율
-    0% · 실제 알리바이 거짓말 탐지 100%</strong>를 확인했다.</p>
+    <div class="case fixed" id="case-violation-tradeoff">
+      <div class="head">
+        <span class="hash">dd53303</span>
+        <span class="sym">참을 거짓으로 잘못 잡거나, 거짓을 놓치거나</span>
+      </div>
+      <div class="body">
+        <div>
+          <div class="lbl">증상</div>
+          <p>한 문장에 여러 시각이 나올 때 어느 시각과 어느 방이 짝인지 정하는 문제. 문장 안
+          시각 N개 × 방 N개를 전부 곱해서 검사했더니, 승인된 두 쌍을 한 문장에 같이 말하기만
+          해도("21시엔 텃밭, 22시엔 거실이었어") 존재하지 않는 교차 조합(예: 21시-거실)까지
+          위반으로 잘못 잡아냈다.</p>
+        </div>
+        <div>
+          <div class="lbl">원인 · 조치</div>
+          <p>시각 등장 위치를 경계로 문장을 구간 나누는 방식으로 바꿨다 — "21시엔 텃밭"과
+          "22시엔 거실"을 별개 구간으로 쪼개 각자의 시각·방만 짝짓는다. 500판 표본 기준
+          <strong>참인 문장을 거짓으로 잘못 잡아낸 비율 0% · 실제 알리바이 거짓말 탐지
+          100%</strong>를 확인했다.</p>
+        </div>
+      </div>
+    </div>
 
-    <h3 id="case-map-wall">건물을 들락날락하는 기능 — 구현하지 못했다</h3>
-    <p>AI로 그린 평면도는 방 입구에 문처럼 생긴 벽 토막이 남아서, 그림만 봐서는 실제로 어디가
-    문이고 어디가 진짜 벽인지 구분이 안 됐다. 원래 목표는 <strong>플레이어가 건물 안팎을 자유롭게
-    들락날락할 수 있게 만드는 것</strong>이었는데, 이 통행 판정 문제를 끝내 완전히 풀지 못해서
-    구현하지 못한 채로 남았다.</p>
+    <div class="case" id="case-map-wall">
+      <div class="head">
+        <span class="hash">미구현</span>
+        <span class="sym">건물을 들락날락하는 기능 — 끝내 구현하지 못했다</span>
+      </div>
+      <div class="body">
+        <div>
+          <div class="lbl">목표</div>
+          <p>플레이어가 건물 안팎을 자유롭게 들락날락할 수 있게 만드는 것이 원래 목표였다.</p>
+        </div>
+        <div>
+          <div class="lbl">막힌 지점 · 결과</div>
+          <p>AI로 그린 평면도는 방 입구에 문처럼 생긴 벽 토막이 남는데, 그림만 봐서는 어디가
+          진짜 문이고 어디가 벽인지 구분이 안 됐다(§02의 img2img 정사각형 제약과 같은 계열
+          문제). 이 통행 판정을 끝내 완전히 풀지 못해 이 기능 자체를 구현하지 못한 채 남았다.</p>
+        </div>
+      </div>
+    </div>
   </section>
 
   <section id="tests">
