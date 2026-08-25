@@ -250,10 +250,10 @@
       참고 문서를 근거로 정리한 것이다.
     </div>
     <div class="meta">
-      <span><b>레포</b> who-ate-my-cheesecake · feat/character-system</span>
+      <span><b>레포</b> who-ate-my-cheesecake · main</span>
       <span><b>런타임 의존성</b> 0개 (Node.js ESM)</span>
-      <span><b>커밋</b> 88개 (init → 현재)</span>
-      <span><b>정리일</b> 2026-08-24</span>
+      <span><b>커밋</b> 80개 (init → 현재)</span>
+      <span><b>정리일</b> 2026-08-25</span>
     </div>
   </div>
 
@@ -333,8 +333,11 @@
       <div class="ico">🏪</div>
       <p><strong>플레이어가 실제로 걸어 다니며 심문하는 무대는 그 집이 아니라 SPUM Studio
       "Cozy Supermarket" 월드(마을 상점가)다.</strong> 하우스메이트 6명과 동네 사람 4명이 전부
-      이 무대 위에 있다 — 사건 현장(과거, 집)과 탐문 무대(현재, 마을)를 분리한 구조다. NPC는
-      "그날 밤 부엌에 있었어" 처럼 집에서 있었던 일을 지금 마을에서 회상해 증언한다.</p>
+      이 무대 위에 있다. 다만 "과거(집)"와 "현재(마을)"가 화면상 두 국면으로 나뉘어 있는 건
+      아니다 — 게임 시작부터 끝까지 무대도 시계도 하나뿐이고, 그 21~02시 시계 자체가
+      <code class="file">round.paths</code>(시각별 방 배정)에 맞춰 그날 밤을 실시간으로
+      재현한다. NPC는 이 무대 위를 걸어 다니면서 "그날 밤 부엌에 있었어" 처럼 그 재현 시각의
+      일을 말로 증언한다 — 화면의 지금과 대사 속 그날 밤이 같은 시계를 공유한다.</p>
     </div>
   </section>
 
@@ -1152,7 +1155,7 @@
         <span style="color:var(--danger)">수정 전</span> 정밀도 75% · 재현율 86% · F1 80%
         (TP=6 FP=2 FN=1) — "아니, 거기 없었어" → 잘못 채워진 hour/room<br>
         <span style="color:var(--accent2)">수정 후</span> 정밀도 100% · 재현율 100% · F1 100%
-        (11/11), harness.mjs 43/43 회귀 없음
+        (TP=11 FP=0 FN=0, 11/11), harness.mjs 43/43 회귀 없음
       </div>
     </div>
 
