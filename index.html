@@ -534,7 +534,9 @@
         <div class="repo">spum-maze-poc</div>
         <p>"SPUM Studio만으로 진짜 충돌 판정이 되는 미로를 만들 수 있는가"를 검증한
         독립 기술 PoC. 런타임 소스 추적으로 PASS 확인 — 이 검증이 최종 게임의 길찾기/충돌
-        설계에 대한 신뢰를 뒷받침했다.</p>
+        설계에 대한 신뢰를 뒷받침했다. 과정에서 SPUM 공식 재질조차 "충돌 여부" 필드가
+        미끼(<code class="file">blocksMovement</code>는 항상 false)였다는 걸 발견했다 —
+        상세는 <a href="#case-maze-poc-fields">§06 · SPUM 필드 함정</a> 참고.</p>
       </div>
       <div class="tl-item">
         <div class="repo">KDT_Works (GitHub 공개)</div>
