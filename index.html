@@ -566,10 +566,12 @@
     </p>
     <div style="display:flex; flex-direction:column; gap:12px; font-size:13.5px; margin-bottom:28px;">
       <div>
-        <span class="pill danger">미해결 2건</span> — 아직 안 풀림
+        <span class="pill danger">미해결 4건</span> — 아직 안 풀림
         <div style="margin-top:4px; color:var(--ink-dim)">
           <a href="#case-classify-expectation">walkable/block 자동화 실패(원인 불명)</a> ·
-          <a href="#case-map-wall">건물을 들락날락하는 기능(미구현)</a>
+          <a href="#case-map-wall">건물을 들락날락하는 기능(미구현)</a> ·
+          <a href="#case-solo-dialogue">혼자 대화체로 말하는 문제(실플레이에서 재현 지속)</a> ·
+          <a href="#case-honorific-register">혼잣말인데 존댓말·되묻는 말투(잔존율 원인 미확정)</a>
         </div>
       </div>
       <div>
@@ -584,9 +586,9 @@
       <div>
         <span class="pill accent2">해결됨 12건</span> — 이 프로젝트에서 실제 재현·검증까지 마침
         <div style="margin-top:4px; color:var(--ink-dim)">
-          <a href="#case-25faabd">말풍선·존댓말·과밀(실플레이+재현 스크립트)</a> ·
+          <a href="#case-25faabd">말풍선·과밀(실플레이 확인)</a> ·
           <a href="#case-fbc14aa">시각 전환 NPC 끌림(실플레이 확인)</a> ·
-          <a href="#case-solo-dialogue">혼자 대화체로 말하는 문제</a> ·
+          <a href="#case-npc-npc-hold">NPC-NPC 대화 중 정지 안 됨(결정론적 검증, 미커밋)</a> ·
           <a href="#case-harvest-sam">증언판 오귀속(구조 전환)</a> ·
           <a href="#case-103261a">SPUM→SAM 404</a> ·
           <a href="#case-server-crash">서버 전체 다운</a> ·
@@ -666,6 +668,84 @@
       </div>
     </div>
 
+    <div class="case" id="case-solo-dialogue">
+      <div class="head">
+        <span class="hash">미해결</span>
+        <span class="hash" style="background:none;padding:0;font-weight:400">(a979752 부분 조치)</span>
+        <span class="sym">혼자 있는 캐릭터가 대화체로 말하는 문제 — 경로 하나는 고쳤지만 실제 플레이에서 여전히 재현됨</span>
+      </div>
+      <div class="body">
+        <div>
+          <div class="lbl">증상</div>
+          <p>청자가 없는 캐릭터가 혼잣말로 자기 알리바이를 대면서도, 마치 누군가에게 말을 거는
+          것처럼 대화체 문장을 뱉는다. 생각(내적 독백)을 나타내야 할 생각풍선도 말풍선과 똑같은
+          대화체로 나온다 — "혼자 중얼거림"이 아니라 "누군가에게 말하는 것"처럼 읽힌다.</p>
+        </div>
+        <div>
+          <div class="lbl">지금까지 조치 · 왜 아직 안 끝났나</div>
+          <p><a href="#case-fbc14aa">fbc14aa</a>는 "NPC가 시각 전환에 끌려감", <a href="#case-honorific-register">honorific-register</a>는
+          "NPC-NPC 소문의 존댓말·되묻는 말투(~잖아 포함)", 그리고 아래 조치는 "플레이어 자신과의
+          대화에서 SAM 응답이 늦게 도착해 말풍선만 새는 경로"를 각각 고쳤다 —
+          <code class="file">say()</code>에 <code class="file">showBubble</code> 매개변수를 추가해,
+          응답 도착 시점에 그 대화가 더는 "지금 보고 있는 대화"가 아니면
+          (<code class="file">chatOpen() && cur===target</code> 재확인) 말풍선만 건너뛰게 했다.
+          이 조치 자체는 <code class="file">say()</code> 직접 호출로 검증됐다(아래 카드).
+          <strong>그런데 2026-08-25 실제 플레이에서 증상이 그대로 재현됐다</strong> — 세 경로를
+          다 막았는데도 남아 있다는 뜻은, 아직 못 찾은 네 번째 경로가 있거나
+          <a href="#case-honorific-register">honorific-register</a>의 잔존율 3.3%가 실제 플레이에서는
+          표본(30회)보다 더 자주 걸린다는 뜻이다 — 어느 쪽인지 아직 가르지 못했다. <strong>세 경로를
+          고친 것과 별개로, 증상 자체는 아직 안 풀렸다.</strong></p>
+        </div>
+      </div>
+      <div class="card mono" style="font-size:12.5px; line-height:1.9; color:var(--ink-dim); margin-top:14px;">
+        showBubble 조치 자체의 검증(브라우저에서 실제 <code style="background:none;padding:0">say()</code> 직접 호출) —
+        <span style="color:var(--danger)">showBubble:false</span>로 부르면 말풍선(<code style="background:none;padding:0">bubbles[id]</code>)은
+        안 바뀌고, 대화 기록(<code style="background:none;padding:0">chat[id]</code>)엔 그대로 남음<br>
+        <span style="color:var(--accent2)">showBubble:true</span>로 부르면 말풍선 정상 갱신 —
+        이 부분 동작만 확인됨.
+        <span style="color:var(--danger)">그러나 실제 플레이에서 증상 자체는 재현됨 — 이 조치가
+        전체 원인이 아니었다.</span>
+      </div>
+      <p style="margin-top:14px; font-size:13.5px; color:var(--ink-dim)"><strong>왜 중요한가</strong>
+      — 순순팩토리가 요구한 건 "멋있는 게임"이 아니라 "interactive한 게임"이다. 대화가 실제로
+      자연스럽고 상호작용처럼 느껴지는지가 핵심 평가 기준이라, 이 증상이 남아 있는 한 그 기준을
+      완전히 채웠다고 말할 수 없다.</p>
+    </div>
+
+
+    <div class="case" id="case-honorific-register">
+      <div class="head">
+        <span class="hash">미해결</span>
+        <span class="hash" style="background:none;padding:0;font-weight:400">(25faabd · 7d76db6 부분 조치)</span>
+        <span class="sym">혼잣말인데 존댓말·되묻는 말투로 나옴 — 규칙은 보강했지만 아직 정확하지 않음</span>
+      </div>
+      <div class="body">
+        <div>
+          <div class="lbl">증상</div>
+          <p>청자가 없을 때 "들려주는" 프레이밍이어야 하는데, 존댓말·되묻는 말투("-요?/-나요?/-지?/~잖아")로
+          나와서 마치 옆에 누가 있는 것처럼 읽힌다.</p>
+        </div>
+        <div>
+          <div class="lbl">지금까지 조치 · 왜 미해결인가</div>
+          <p>실제 플레이에서 재현된다는 보고가 있어 재현 스크립트를 100회 표본(함수 5개×20회)으로
+          늘려보니 <code class="file">buildSuspectTalkMessages</code>만 5%(1/20)에서 "~잖아" 위반.
+          원인은 이 함수(및 2곳 더)의 금지 목록에 "-요?/-나요?/-지?"만 있고
+          <strong>"~잖아"가 빠져 있었다</strong> — 옆 함수엔 이미 있던 패턴. 4곳 모두 보강 후 30회
+          재검증 — 3.3%(1/30)로 줄었지만 완전히 0%는 안 됐다. 프롬프트에 규칙이 실제로 들어가는
+          것도 직접 찍어 확인했다. <strong>그런데 이게 정말 "모델의 지시 순응 한계"인지, 아니면 아직
+          못 찾은 다른 원인이 남은 건지는 가르지 못했다</strong> — <a href="#case-solo-dialogue">
+          혼자 대화체로 말하는 문제</a>가 세 경로를 다 고친 뒤에도 실제 플레이에서 재현되는 것과
+          이 잔존율이 관련 있을 가능성이 있다. 그래서 "해결됨"이 아니라 미해결로 남긴다.</p>
+        </div>
+      </div>
+      <div class="card mono" style="font-size:12.5px; line-height:1.9; color:var(--ink-dim); margin-top:14px;">
+        실제 위반 사례(재현 스크립트가 실제로 캡처, 구성 아님) — 하루가 혼자 있을 때 짐작하는 상황<br>
+        <span style="color:var(--danger)">수정 전 규칙</span> "-요?/-나요?/-지? 금지" (잖아는 안 막힘) →
+        "피치 좀 수상한데, 저녁을 거의 안 먹는 걸 봤잖아." <span style="color:var(--ink-faint)">← "잖아"로 새어나감</span><br>
+        <span style="color:var(--accent2)">수정 후 규칙</span> "-요?/-나요?/-지?/~잖아 금지" →
+        위반율 5%→3.3%(잔존, 원인 미확정)
+      </div>
+    </div>
     <div class="case sourced">
       <div class="head">
         <span class="hash">코드만 확인</span>
@@ -762,33 +842,20 @@
     <div class="case fixed" id="case-25faabd">
       <div class="head">
         <span class="hash">25faabd · 7d76db6</span>
-        <span class="sym">말풍선 화면 밖 삐져나옴 · 존댓말 오류 · 동시 발화 과밀 — 세 증상 각각 다른 근거로 확인</span>
+        <span class="sym">말풍선 화면 밖 삐져나옴 · 동시 발화 과밀 — 둘 다 실제 플레이로 확인</span>
       </div>
       <div class="body">
         <div>
-          <div class="lbl">증상 3가지</div>
-          <p>① 말풍선이 캔버스 경계를 넘어감. ② 청자가 없을 때 "들려주는" 프레이밍이 존댓말·되묻는
-          말투로 나와 어긋나 보임. ③ 소문 발화가 겹쳐 화면이 과밀했다.</p>
+          <div class="lbl">증상 2가지</div>
+          <p>① 말풍선이 캔버스 경계를 넘어감. ② 소문 발화가 겹쳐 화면이 과밀했다.</p>
         </div>
         <div>
-          <div class="lbl">각 증상의 확인 수준(2026-08-25 재검증)</div>
-          <p><strong>① 삐져나옴 — 실제 플레이로 확인됨(신서연).</strong>
-          <strong>③ 과밀 — 실제 플레이로 확인됨(신서연).</strong>
-          ② 존댓말 오류만 실제 플레이에서 재현된다는 보고가 있어 더 팠다 — 재현 스크립트를
-          100회 표본(함수 5개×20회)으로 늘려보니 <code class="file">buildSuspectTalkMessages</code>만
-          5%(1/20)에서 "~잖아" 위반. 원인은 이 함수(및 2곳 더)의 금지 목록에 "-요?/-나요?/-지?"만
-          있고 <strong>"~잖아"가 빠져 있었다</strong> — 옆 함수엔 이미 있던 패턴. 4곳 모두 보강 후
-          30회 재검증 — 3.3%(1/30)로 완전히 0%는 안 됐다. 프롬프트에 규칙이 실제로 들어가는 것도
-          직접 찍어 확인했지만, 이 특정 캐릭터·사실 조합에서 모델이 낮은 확률로 규칙을 못 지킨다 —
-          <strong>프롬프트 갭은 닫혔고, 남은 한 자릿수 %는 모델 자체의 지시 순응 한계</strong>로 판단.</p>
+          <div class="lbl">확인 수준(2026-08-25 재검증)</div>
+          <p><strong>① 삐져나옴 — 실제 플레이로 확인됨.</strong>
+          <strong>② 과밀 — 실제 플레이로 확인됨.</strong> 둘 다 렌더링·타이밍 쪽 수정이라
+          말투(어미)와는 무관하다 — 존댓말 오류는 원인이 전혀 다른 별개 문제라
+          <a href="#case-honorific-register">따로 뗐다</a>.</p>
         </div>
-      </div>
-      <div class="card mono" style="font-size:12.5px; line-height:1.9; color:var(--ink-dim); margin-top:14px;">
-        실제 위반 사례(재현 스크립트가 실제로 캡처, 구성 아님) — 하루가 혼자 있을 때 짐작하는 상황<br>
-        <span style="color:var(--danger)">수정 전 규칙</span> "-요?/-나요?/-지? 금지" (잖아는 안 막힘) →
-        "피치 좀 수상한데, 저녁을 거의 안 먹는 걸 봤잖아." <span style="color:var(--ink-faint)">← "잖아"로 새어나감</span><br>
-        <span style="color:var(--accent2)">수정 후 규칙</span> "-요?/-나요?/-지?/~잖아 금지" →
-        위반율 5%→3.3%(잔존, 모델 한계로 판단)
       </div>
     </div>
 
@@ -809,9 +876,9 @@
           다음 시각 방으로 돌려보냈다. <code class="file">npcState</code>에 <code class="file">holdUntil</code>
           필드를 추가해 대화 중인 NPC는 건너뛰게 했다(<code class="file">play.html:662</code>에
           그 조건문이 실제로 있는 것까지 코드로 재확인). <strong>2026-08-25 실제 플레이로
-          재검증(신서연 직접 확인)</strong> — 적어도 플레이어-NPC 대화 중에는 시각이 바뀌어도
-          NPC가 확실히 멈춰서 대화를 이어감. (NPC-NPC 소문 페어링 쪽은 별도 확인 안 됨,
-          <a href="#case-25faabd">25faabd</a> 참고.)</p>
+          재검증</strong> — 적어도 플레이어-NPC 대화 중에는 시각이 바뀌어도
+          NPC가 확실히 멈춰서 대화를 이어감. (NPC-NPC 소문 쪽엔 별도 결함이 있었다 —
+          <a href="#case-npc-npc-hold">npc-npc-hold</a> 참고.)</p>
         </div>
       </div>
       <div class="card mono" style="font-size:12.5px; line-height:1.9; color:var(--ink-dim); margin-top:14px;">
@@ -822,43 +889,33 @@
       </div>
     </div>
 
-    <div class="case fixed" id="case-solo-dialogue">
+    <div class="case fixed" id="case-npc-npc-hold">
       <div class="head">
-        <span class="hash">a979752</span>
-        <span class="sym">혼자 있는 캐릭터가 대화체로 말하는 문제 — 세 번째 경로를 찾아 고침</span>
+        <span class="hash">미커밋</span>
+        <span class="sym">NPC끼리 대화할 땐 정지가 안 먹힘 — 이미 걷던 걸음은 hold를 안 봄</span>
       </div>
       <div class="body">
         <div>
           <div class="lbl">증상</div>
-          <p>청자가 없는 캐릭터가 마치 누군가에게 말을 거는 것처럼 대화체 문장을 뱉는다. 생각(내적
-          독백)을 나타내야 할 생각풍선도 말풍선과 똑같은 대화체로 나온다 — "혼자 중얼거림"이 아니라
-          "누군가에게 말하는 것"처럼 읽힌다.</p>
+          <p>플레이어-NPC 대화 중엔 NPC가 확실히 멈추는데(<a href="#case-fbc14aa">fbc14aa</a>),
+          NPC끼리 소문을 주고받을 땐 대화와 무관하게 계속 돌아다녔다.</p>
         </div>
         <div>
           <div class="lbl">원인 · 조치</div>
-          <p><a href="#case-fbc14aa">fbc14aa</a>·<a href="#case-25faabd">25faabd</a>는 각각 "NPC가
-          시각 전환에 끌려감"과 "NPC-NPC 소문"만 고쳤다 — 정작 재현되던 건 <strong>플레이어
-          자신과의 대화</strong>였다. <code class="file">send()</code>가 SAM 응답(수 초 소요)을
-          기다리는 동안 플레이어가 대화를 닫거나 다른 NPC로 넘어가도, 응답이 도착하면
-          <code class="file">say()</code>가 무조건 대화체 말풍선을 띄웠다 — 그 세 번째 경로는
-          이전 두 수정 어느 쪽도 안 건드렸다. <code class="file">say()</code>에
-          <code class="file">showBubble</code> 매개변수를 추가해, 응답 도착 시점에 그 대화가
-          더는 "지금 보고 있는 대화"가 아니면(<code class="file">chatOpen() && cur===target</code>
-          재확인) 말풍선만 건너뛰고 대화 기록·증언판 반영은 그대로 하게 했다.</p>
+          <p>소문이 트리거되면 <code class="file">npcState.holdUntil</code>을 세우는데, 이 값을
+          실제로 보는 곳은 <code class="file">npcWander()</code>의 "새 배회 결정" 분기뿐이었다.
+          이미 <code class="file">s.moving===true</code>로 걷는 중이던 NPC는 그 분기를 아예
+          안 타서(<code class="file">if (s.moving) return;</code>), hold가 걸려도 이미 잡아둔
+          경로를 끝까지 걸어갔다. <code class="file">updateNPCs()</code> 루프 최상단에
+          <code class="file">if (s.mode!=='chase' && Date.now()&lt;(s.holdUntil||0)) continue;</code>를
+          추가해, 진행 중이던 걸음도 그 자리서 즉시 멈추게 했다.</p>
         </div>
       </div>
       <div class="card mono" style="font-size:12.5px; line-height:1.9; color:var(--ink-dim); margin-top:14px;">
-        검증(브라우저에서 실제 <code style="background:none;padding:0">say()</code> 직접 호출) —
-        <span style="color:var(--danger)">showBubble:false</span>로 부르면 말풍선(<code style="background:none;padding:0">bubbles[id]</code>)은
-        안 바뀌고, 대화 기록(<code style="background:none;padding:0">chat[id]</code>)엔 그대로 남음<br>
-        <span style="color:var(--accent2)">showBubble:true</span>로 부르면 말풍선 정상 갱신 —
-        확인됨. <span style="color:var(--ink-faint)">단, 실제 UI 클릭으로 SAM 응답 도중에 다른
-        NPC로 넘어가는 그 순간의 타이밍까지 재현한 건 아니다 — say() 자체의 동작만 직접
-        검증했다.</span>
+        검증(결정론적 프레임 스텝 — 실제 rAF 대신 <code style="background:none;padding:0">updateNPCs(16.667)</code>를
+        수동으로 반복 호출) — 걷는 중에 hold를 걸고 3초간 반복 호출한 결과, 좌표(gx/gy/px/py)
+        완전히 고정. hold가 풀린 뒤 다시 반복 호출하니 정상적으로 다음 칸까지 이동 재개.
       </div>
-      <p style="margin-top:14px; font-size:13.5px; color:var(--ink-dim)"><strong>왜 중요했나</strong>
-      — 순순팩토리가 요구한 건 "멋있는 게임"이 아니라 "interactive한 게임"이다. 대화가 실제로
-      자연스럽고 상호작용처럼 느껴지는지가 핵심 평가 기준이었다.</p>
     </div>
 
     <div class="case fixed" id="case-harvest-sam">
@@ -897,19 +954,22 @@
     <div class="case fixed" id="case-103261a">
       <div class="head">
         <span class="hash">103261a</span>
-        <span class="sym">SPUM 런타임 → SAM 호출 404</span>
+        <span class="sym">SPUM 엔진의 내장 대화 기능이 SAM 호출에서 404를 받음</span>
       </div>
       <div class="body">
         <div>
           <div class="lbl">증상</div>
-          <p>SPUM 월드 런타임이 <code class="file">model</code>을 빈 문자열로 보내
-          SAM이 <code class="file">Unknown model: ''</code> 404를 반환.</p>
+          <p>SPUM 엔진에 원래 내장된 자체 대화 기능이 SAM에게 "무슨 모델로 대사 지어줘" 요청을
+          보낼 때 모델 이름 칸을 빈 채로 보냈다. SAM은 <code class="file">Unknown model: ''</code>
+          라며(그런 모델 없다는 뜻) 요청 자체를 거절했다(404).</p>
         </div>
         <div>
           <div class="lbl">원인 · 조치</div>
-          <p>같은 키로 SAM을 직접 호출하면 정상 — 권한 문제가 아니라 요청 형식 문제였다.
-          <code class="file">normalizeSamBody()</code> 신설: 빈/없는 model 채움, prompt→messages
-          변환, max_tokens 기본값. 검증: 빈 model / model 없음 두 경우 모두 200 확인.</p>
+          <p>처음엔 "권한이 없어서 막혔나" 의심했지만, 같은 키로 SAM을 직접 호출해보니 잘 됐다 —
+          권한 문제가 아니라 SPUM이 보내는 요청 형식이 SAM이 원하는 형식과 안 맞았던 것이다.
+          요청이 SAM에게 가기 전에 중간에서 가로채, 모델 이름이 비어 있으면 기본값을 채워 넣고
+          형식도 SAM이 원하는 모양으로 바꿔주는 함수(<code class="file">normalizeSamBody()</code>)를
+          새로 끼워 넣었다. 그 뒤로 정상 응답(200)이 왔다.</p>
         </div>
       </div>
       <div class="card mono" style="font-size:12.5px; line-height:1.9; color:var(--ink-dim); margin-top:14px;">
@@ -1180,9 +1240,11 @@
     <p style="font-size:13px; color:var(--ink-faint); margin-top:10px">이 표는 구조적 안정성만
     검증한다 — 길찾기가 막히지 않는지, 버튼이 눌리는지, 로직이 안 깨지는지. "대화가 실제로
     자연스럽고 interactive한지"는 별개 문제다 — 그중 가장 눈에 띄던 사례(혼자 있는 캐릭터가
-    대화체로 말하는 문제)는 <a href="#case-solo-dialogue">§06에서 원인을 찾아 고쳤다</a>. 다만
-    이 표의 다른 항목들과 달리 대화 자연스러움 자체를 자동으로 채점하는 표준 지표는 없다 —
-    지금 남은 미해결 2건은 대화가 아니라 지도/충돌 쪽이다.</p>
+    대화체로 말하는 문제)는 경로 세 개를 찾아 고쳤는데도 <a href="#case-solo-dialogue">실제
+    플레이에서 여전히 재현돼 §06에 미해결로 남아 있다</a>. 이 표의 다른 항목들과 달리 대화
+    자연스러움 자체를 자동으로 채점하는 표준 지표도 없다 — 지금 남은 미해결 4건 중
+    <a href="#case-solo-dialogue">solo-dialogue</a>·<a href="#case-honorific-register">honorific-register</a>
+    둘이 이 대화 쪽이고, 나머지 둘은 지도/충돌 쪽이다.</p>
   </section>
 
 
