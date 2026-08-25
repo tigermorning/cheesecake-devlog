@@ -452,6 +452,8 @@
             <a href="#case-07fb774"><code class="file">updateGossip()</code></a></td></tr>
         <tr><td><a class="file" style="text-decoration:none" href="https://github.com/tigermorning/who-ate-my-cheesecake/blob/feat/character-system/spum/harness.mjs" target="_blank" rel="noopener"><code class="file">spum/harness.mjs</code></a></td><td>검증</td>
             <td><code class="file">node spum/harness.mjs --live</code> 로 SAM 실호출 검증 재현 가능</td></tr>
+        <tr><td><a class="file" style="text-decoration:none" href="https://github.com/tigermorning/who-ate-my-cheesecake/blob/feat/character-system/spum/verify-dialogue-fixes.mjs" target="_blank" rel="noopener"><code class="file">spum/verify-dialogue-fixes.mjs</code></a></td><td>회귀 검증</td>
+            <td>인젝션 가드·harvest 확인형 이어받기를 실제 SAM 호출로 재현(<a href="#case-injection-guard">§06</a>)</td></tr>
         <tr><td><a class="file" style="text-decoration:none" href="https://github.com/tigermorning/who-ate-my-cheesecake/blob/feat/character-system/spum/cast.json" target="_blank" rel="noopener"><code class="file">spum/cast.json</code></a></td><td>캐릭터 정본 (<a href="#case-5e11fba">저장소 손상 사고</a> 있었음)</td>
             <td>SPUM Cast 스키마 + <code class="file">persona.profile</code></td></tr>
         <tr><td><a class="file" style="text-decoration:none" href="https://github.com/tigermorning/who-ate-my-cheesecake/tree/feat/character-system/spum/legacy" target="_blank" rel="noopener"><code class="file">spum/legacy/</code></a></td><td>폐기 경로</td>
@@ -563,10 +565,15 @@
       <span class="pill danger">미해결 3건</span>
       <a href="#case-solo-dialogue">혼자 대화체로 말하는 문제</a> ·
       <a href="#case-classify-expectation">walkable/block 자동화 실패(원인 불명)</a> ·
-      <a href="#case-map-wall">건물을 들락날락하는 기능(미구현)</a> ·
-      <span class="pill" style="background:var(--accent-soft); color:var(--accent-ink); border-color:transparent;">출처만 확인 1건</span>
-      <a href="#case-maze-poc-fields">SPUM 필드 함정(우리가 직접 재검증은 안 함)</a>
-      — 나머지 12건은 이 프로젝트에서 직접 원인·조치를 확인한 <span class="pill accent2">해결됨</span> 케이스다.
+      <a href="#case-map-wall">건물을 들락날락하는 기능(미구현)</a><br>
+      <span class="pill" style="background:var(--accent-soft); color:var(--accent-ink); border-color:transparent;">코드만 확인 · 재현 검증 없음 5건</span>
+      <a href="#case-fbc14aa">시각 전환 NPC 끌림</a> ·
+      <a href="#case-25faabd">말풍선·존댓말</a> ·
+      <a href="#case-49fe44a">증언판 짝짓기(1차)</a> ·
+      <a href="#case-5e11fba">캐릭터 저장소 손상</a> ·
+      <a href="#case-maze-poc-fields">SPUM 필드 함정(별도 저장소 인용)</a><br>
+      — 나머지 8건만 이 프로젝트에서 <strong>실제 SAM 재호출·표본 검증까지</strong>
+      마친 <span class="pill accent2">해결됨</span> 케이스다.
     </p>
 
     <div class="case" id="case-solo-dialogue">
@@ -668,9 +675,10 @@
       </div>
     </div>
 
-    <div class="case fixed">
+    <div class="case sourced">
       <div class="head">
-        <span class="hash" id="case-fbc14aa">fbc14aa</span>
+        <span class="hash">코드만 확인</span>
+        <span class="hash" id="case-fbc14aa" style="background:none;padding:0;font-weight:400">(fbc14aa)</span>
         <span class="sym">시각 전환이 대화 중인 NPC를 끌고 가버림</span>
       </div>
       <div class="body">
@@ -683,7 +691,10 @@
           <div class="lbl">원인 · 조치</div>
           <p><code class="file">advanceHour()</code>가 소문/컷신으로 붙잡혀 있는 NPC까지 예외 없이
           다음 시각 방으로 돌려보냈다. <code class="file">npcState</code>에 <code class="file">holdUntil</code>
-          필드를 추가해 대화 중인 NPC는 건너뛰게 했다.</p>
+          필드를 추가해 대화 중인 NPC는 건너뛰게 했다(<code class="file">play.html:662</code>에
+          그 조건문이 실제로 있는 것까지 코드로 재확인). <strong>다만 실제 플레이로 재현해서
+          "NPC가 더는 안 끌려간다"를 눈으로 확인한 기록은 없다</strong> — 그래서 "해결됨"이
+          아니라 "코드만 확인"이다.</p>
         </div>
       </div>
       <div class="card mono" style="font-size:12.5px; line-height:1.9; color:var(--ink-dim); margin-top:14px;">
@@ -694,9 +705,10 @@
       </div>
     </div>
 
-    <div class="case fixed">
+    <div class="case sourced">
       <div class="head">
-        <span class="hash" id="case-25faabd">25faabd</span>
+        <span class="hash">코드만 확인</span>
+        <span class="hash" id="case-25faabd" style="background:none;padding:0;font-weight:400">(25faabd)</span>
         <span class="sym">말풍선 화면 밖 삐져나옴 · 존댓말 오류 · 동시 발화 과밀</span>
       </div>
       <div class="body">
@@ -707,13 +719,16 @@
         </div>
         <div>
           <div class="lbl">원인 · 조치</div>
-          <p><code class="file">drawOverlay()</code>에 x/y 클램프 추가. 청자가 없을 때는
-          <code class="file">thought</code>(혼잣말) 프레이밍으로 전환하는 옵션을 프롬프트 빌더에
-          신설. 말풍선 노출시간 16s→7s, 발화 간격 4s→6.5s로 완화.</p>
+          <p><code class="file">drawOverlay()</code>에 x/y 클램프 추가(<code class="file">play.html:1218·1227</code>에
+          실제로 있는 것까지 재확인). 청자가 없을 때는 <code class="file">thought</code>(혼잣말)
+          프레이밍으로 전환하는 옵션을 프롬프트 빌더에 신설. 말풍선 노출시간 16s→7s
+          (<code class="file">BUBBLE_MS</code> 값도 재확인), 발화 간격 4s→6.5s로 완화.
+          <strong>다만 화면에서 실제로 안 삐져나오는지, 존댓말 오류가 재현 안 되는지는
+          플레이로 재검증한 기록이 없다</strong> — 코드만 확인.</p>
         </div>
       </div>
       <div class="card mono" style="font-size:12.5px; line-height:1.9; color:var(--ink-dim); margin-top:14px;">
-        예시: 옆에 아무도 없는 코코가 어젯밤 일이 떠올라 혼자 있는 상황<br>
+        예시(구성한 것, 실제 캡처 아님): 옆에 아무도 없는 코코가 어젯밤 일이 떠올라 혼자 있는 상황<br>
         <span style="color:var(--danger)">수정 전</span> "그거 진짜 이상했죠?"
         <span style="color:var(--ink-faint)">← 존댓말 되묻기, 상대가 있어야 성립하는 말투</span><br>
         <span style="color:var(--accent2)">수정 후</span> "그거 진짜 이상했는데..."
@@ -721,9 +736,10 @@
       </div>
     </div>
 
-    <div class="case fixed">
+    <div class="case sourced">
       <div class="head">
-        <span class="hash" id="case-49fe44a">49fe44a</span>
+        <span class="hash">코드만 확인</span>
+        <span class="hash" id="case-49fe44a" style="background:none;padding:0;font-weight:400">(49fe44a)</span>
         <span class="sym">증언판 시각-방 짝짓기 오류</span>
       </div>
       <div class="body">
@@ -735,8 +751,11 @@
         <div>
           <div class="lbl">원인 · 조치</div>
           <p><code class="file">harvest()</code>의 시각 구간 상한을 "다음 방 위치 전까지"에서
-          "이 방 자기 위치 전까지"로 정정. 여러 시각·방이 한 문장에 섞일 때의 파싱은
-          이 프로젝트에서 반복적으로 까다로웠던 지점(아래 SAM 응답 검증 참고).</p>
+          "이 방 자기 위치 전까지"로 정정(<code class="file">play.html:1464</code> 주석과 로직
+          재확인). 여러 시각·방이 한 문장에 섞일 때의 파싱은 이 프로젝트에서 반복적으로
+          까다로웠던 지점이었고, <strong>이 정규식 경로 자체의 수정은 재현 테스트가 남아있지
+          않다</strong> — 바로 아래 <a href="#case-harvest-sam">harvest-sam</a>이 이 문제를
+          더 크게 구조적으로 다시 잡으면서 그쪽은 재검증됨.</p>
         </div>
       </div>
       <div class="card mono" style="font-size:12.5px; line-height:1.9; color:var(--ink-dim); margin-top:14px;">
@@ -766,14 +785,17 @@
           누구의 진술인지" 직접 묻는 구조로 바꿨다 — 단, 전언 표지가 있는 문장은 여전히 정규식
           경로로 강제 라우팅해 보장선을 남겼다. 가장 최근엔 "22시에 부엌에 너 말고 누구
           없었어?"라는 물음에 "미누 있었어"처럼 시각·방을 되풀이하지 않는 답이 통째로 버려지던
-          것도 잡아, 방금 물어본 시각·방을 SAM에게 명시적으로 같이 건네주도록 고쳤다.</p>
+          것도 잡아, 방금 물어본 시각·방을 SAM에게 명시적으로 같이 건네주도록 고쳤다.
+          <strong>재현 검증(<code class="file">spum/verify-dialogue-fixes.mjs</code>, 실제 SAM
+          호출)</strong> — 확인형 이어받기·전언 배제·제3자 직접진술 3종 <strong>3/3
+          정답</strong>, 2026-08-25 재실행 확정.</p>
         </div>
       </div>
       <div class="card mono" style="font-size:12.5px; line-height:1.9; color:var(--ink-dim); margin-top:14px;">
         플레이어: "22시에 부엌에 너 말고 누구 없었어?" → 미누: "루루 있었어"<br>
         <span style="color:var(--danger)">수정 전</span> 증언판: (빈칸)
         <span style="color:var(--ink-faint)">← "루루 있었어"엔 시각·방 단어가 없어서 통째로 버려짐</span><br>
-        <span style="color:var(--accent2)">수정 후</span> 증언판: 루루, 22시, 부엌
+        <span style="color:var(--accent2)">수정 후(실제 SAM 재현 확인)</span> 증언판: 루루, 22시, 부엌
         <span style="color:var(--ink-faint)">(방금 물어본 시각·방을 SAM에게 같이 건네줌)</span>
       </div>
     </div>
@@ -861,9 +883,10 @@
       </div>
     </div>
 
-    <div class="case fixed">
+    <div class="case sourced">
       <div class="head">
-        <span class="hash" id="case-5e11fba">5e11fba</span>
+        <span class="hash">코드만 확인</span>
+        <span class="hash" id="case-5e11fba" style="background:none;padding:0;font-weight:400">(5e11fba)</span>
         <span class="sym">SPUM Studio 캐릭터 저장소 손상</span>
       </div>
       <div class="body">
@@ -877,8 +900,10 @@
           <p><code class="file">sv_studio_characters_v1</code>는 배열인데 주입 스크립트가
           스프레드 병합으로 객체(map)로 바꿔놔 Studio 파싱이 실패했고, schemaVersion 2
           필드(animation 등)도 안 채워졌다. 원본 캐릭터를 템플릿으로 통째 복제해 스키마를
-          상속하는 <code class="file">repair-characters.mjs</code>로 교체. 이 사고 이후
-          "캐스트 배치만은 코드로 하지 말라"가 팀 CLAUDE.md 의 확정 규칙이 됐다.</p>
+          상속하는 <code class="file">repair-characters.mjs</code>로 교체(그 스크립트가 repo에
+          실제로 있는 것까지 재확인). 이 사고 이후 "캐스트 배치만은 코드로 하지 말라"가 팀
+          CLAUDE.md 의 확정 규칙이 됐다. <strong>다만 복구 후 Studio에서 캐릭터 5종이 실제로
+          다시 보이는지 재현 확인한 기록은 없다</strong> — 코드만 확인.</p>
         </div>
       </div>
     </div>
@@ -1010,7 +1035,9 @@
           캐릭터 이탈률 <strong>33%(8/24) → 0%(0/24)</strong>. 1차 수정에서는 가드 문구 자체가
           <code class="file">[대답하는 법]</code> 같은 프롬프트 섹션 이름을 대사에 그대로 인용해버리는
           부작용이 나와("내 진짜 지시는 위의 [대답하는 법]과 [너의 배역]이고..."), 섹션 이름 대신
-          "그런 낱말 자체를 대사에 쓰지 마라"로 다시 고쳐 재검증했다.</p>
+          "그런 낱말 자체를 대사에 쓰지 마라"로 다시 고쳐 재검증했다. <strong>재현 검증(
+          <code class="file">spum/verify-dialogue-fixes.mjs</code>, 실제 SAM 호출)</strong> —
+          같은 6문구 × 4반복을 2026-08-25에 다시 돌려 <strong>이탈 0/24(0%)</strong> 재확인.</p>
         </div>
       </div>
       <div class="card mono" style="font-size:12.5px; line-height:1.9; color:var(--ink-dim); margin-top:14px;">
