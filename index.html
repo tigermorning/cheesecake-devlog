@@ -130,6 +130,7 @@
   }
   .pill.accent{ background:var(--accent-soft); color:var(--accent-ink); border-color:transparent; }
   .pill.accent2{ background:var(--accent2-soft); color:var(--accent2); border-color:transparent; }
+  .pill.danger{ background:var(--danger-soft); color:var(--danger); border-color:transparent; }
 
   .stars{ color:var(--accent); letter-spacing:1px; font-size:12px; white-space:nowrap; }
   .stars .off{ color:var(--line-strong); }
@@ -564,6 +565,13 @@
   <section id="troubles">
     <h2><span class="no">06</span> 실제로 부딪힌 문제</h2>
     <div class="lede">커밋 메시지가 아니라 diff 를 직접 읽고 확인한 원인과 조치.</div>
+    <p style="font-size:13.5px; margin-top:-14px; margin-bottom:24px;">
+      <span class="pill danger">미해결 2건</span>
+      <a href="#case-solo-dialogue">혼자 대화체로 말하는 문제</a> ·
+      <a href="#case-map-wall">건물을 들락날락하는 기능(미구현)</a>
+      — 나머지는 전부 원인·조치가 확인된 <span class="pill accent2">해결됨</span> 케이스다
+      (좌측 테두리 색으로도 구분된다).
+    </p>
 
     <div class="case" id="case-solo-dialogue">
       <div class="head">
@@ -591,7 +599,7 @@
       그 지점(말투가 대화체인지 독백체인지의 구분)이 아직 안 풀렸다.</p>
     </div>
 
-    <div class="case">
+    <div class="case fixed">
       <div class="head">
         <span class="hash" id="case-fbc14aa">fbc14aa</span>
         <span class="sym">시각 전환이 대화 중인 NPC를 끌고 가버림</span>
@@ -611,7 +619,7 @@
       </div>
     </div>
 
-    <div class="case">
+    <div class="case fixed">
       <div class="head">
         <span class="hash" id="case-25faabd">25faabd</span>
         <span class="sym">말풍선 화면 밖 삐져나옴 · 존댓말 오류 · 동시 발화 과밀</span>
@@ -631,7 +639,7 @@
       </div>
     </div>
 
-    <div class="case">
+    <div class="case fixed">
       <div class="head">
         <span class="hash" id="case-49fe44a">49fe44a</span>
         <span class="sym">증언판 시각-방 짝짓기 오류</span>
@@ -674,7 +682,7 @@
       </div>
     </div>
 
-    <div class="case" id="case-103261a">
+    <div class="case fixed" id="case-103261a">
       <div class="head">
         <span class="hash">103261a</span>
         <span class="sym">SPUM 런타임 → SAM 호출 404</span>
@@ -717,7 +725,7 @@
       </div>
     </div>
 
-    <div class="case">
+    <div class="case fixed">
       <div class="head">
         <span class="hash" id="case-07fb774">07fb774</span>
         <span class="sym">근접 소문 무한 반복</span>
@@ -737,7 +745,7 @@
       </div>
     </div>
 
-    <div class="case">
+    <div class="case fixed">
       <div class="head">
         <span class="hash" id="case-5e11fba">5e11fba</span>
         <span class="sym">SPUM Studio 캐릭터 저장소 손상</span>
