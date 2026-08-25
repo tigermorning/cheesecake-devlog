@@ -562,19 +562,42 @@
   <section id="troubles">
     <h2><span class="no">06</span> 실제로 부딪힌 문제</h2>
     <p style="font-size:13.5px; margin-bottom:24px;">
-      <span class="pill danger">미해결 3건</span>
-      <a href="#case-solo-dialogue">혼자 대화체로 말하는 문제</a> ·
-      <a href="#case-classify-expectation">walkable/block 자동화 실패(원인 불명)</a> ·
-      <a href="#case-map-wall">건물을 들락날락하는 기능(미구현)</a><br>
-      <span class="pill" style="background:var(--accent-soft); color:var(--accent-ink); border-color:transparent;">코드만 확인 · 재현 검증 없음 5건</span>
-      <a href="#case-fbc14aa">시각 전환 NPC 끌림</a> ·
-      <a href="#case-25faabd">말풍선·존댓말</a> ·
-      <a href="#case-49fe44a">증언판 짝짓기(1차)</a> ·
-      <a href="#case-5e11fba">캐릭터 저장소 손상</a> ·
-      <a href="#case-maze-poc-fields">SPUM 필드 함정(별도 저장소 인용)</a><br>
-      — 나머지 8건만 이 프로젝트에서 <strong>실제 SAM 재호출·표본 검증까지</strong>
-      마친 <span class="pill accent2">해결됨</span> 케이스다.
+      3단계로 나뉜다 — 좌측 테두리·배지 색이 그대로 신호다.
     </p>
+    <div style="display:flex; flex-direction:column; gap:12px; font-size:13.5px; margin-bottom:28px;">
+      <div>
+        <span class="pill danger">미해결 3건</span> — 아직 안 풀림
+        <div style="margin-top:4px; color:var(--ink-dim)">
+          <a href="#case-solo-dialogue">혼자 대화체로 말하는 문제</a> ·
+          <a href="#case-classify-expectation">walkable/block 자동화 실패(원인 불명)</a> ·
+          <a href="#case-map-wall">건물을 들락날락하는 기능(미구현)</a>
+        </div>
+      </div>
+      <div>
+        <span class="pill" style="background:var(--accent-soft); color:var(--accent-ink); border-color:transparent;">코드만/출처만 확인 5건</span>
+        — 변경된 코드는 실재를 재확인했지만, 행동 재현 검증은 없음
+        <div style="margin-top:4px; color:var(--ink-dim)">
+          <a href="#case-fbc14aa">시각 전환 NPC 끌림</a> ·
+          <a href="#case-25faabd">말풍선·존댓말</a> ·
+          <a href="#case-49fe44a">증언판 짝짓기(1차)</a> ·
+          <a href="#case-5e11fba">캐릭터 저장소 손상</a> ·
+          <a href="#case-maze-poc-fields">SPUM 필드 함정(별도 저장소 인용)</a>
+        </div>
+      </div>
+      <div>
+        <span class="pill accent2">해결됨 8건</span> — 이 프로젝트에서 실제 SAM 재호출·표본 검증까지 마침
+        <div style="margin-top:4px; color:var(--ink-dim)">
+          <a href="#case-harvest-sam">증언판 오귀속(구조 전환)</a> ·
+          <a href="#case-103261a">SPUM→SAM 404</a> ·
+          <a href="#case-server-crash">서버 전체 다운</a> ·
+          <a href="#case-07fb774">근접 소문 무한반복</a> ·
+          <a href="#case-grid-inversion">벽 위 걷기(기반 버그 2개)</a> ·
+          <a href="#case-culprit-confession">범인 자백 검증 통과</a> ·
+          <a href="#case-injection-guard">인젝션 가드</a> ·
+          <a href="#case-violation-tradeoff">위반 오탐·누락</a>
+        </div>
+      </div>
+    </div>
 
     <div class="case" id="case-solo-dialogue">
       <div class="head">
