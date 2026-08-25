@@ -226,7 +226,7 @@
 
   <div class="grp">코드</div>
   <a href="#architecture">아키텍처</a>
-  <a href="#filemap">파일 지도 (코드 리뷰용)</a>
+  <a href="#filemap">저장소</a>
   <a href="#principles">설계 원칙</a>
 
   <div class="grp">과정</div>
@@ -422,41 +422,10 @@
   </section>
 
   <section id="filemap">
-    <h2><span class="no">03</span> 파일 지도 — 코드 리뷰용</h2>
-    <div class="lede">직접 코드를 보실 때 이 순서로 보는 걸 권합니다: round → memory → dialogue → play.html.
-    레포는 공개 저장소입니다 — 파일명을 누르면 GitHub에서 실제 코드로 바로 넘어갑니다.</div>
-
-    <div class="callout">
-      <div class="ico">🔗</div>
-      <p><a href="https://github.com/tigermorning/who-ate-my-cheesecake" target="_blank" rel="noopener">github.com/tigermorning/who-ate-my-cheesecake</a>
-      — <code class="file">feat/character-system</code>을 <code class="file">main</code>에
-      병합했습니다(2026-08-25, <span class="pill">5a3faaa</span>). 이제 두 브랜치가 같은 지점을
-      가리키므로 아래 코드 링크는 어느 쪽으로 봐도 같은 코드입니다.</p>
-    </div>
-
-    <div class="tblwrap">
-      <table>
-        <tr><th>경로</th><th>역할</th><th>봐야 할 지점</th></tr>
-        <tr><td><a class="file" style="text-decoration:none" href="https://github.com/tigermorning/who-ate-my-cheesecake/blob/feat/character-system/spum/round.mjs" target="_blank" rel="noopener"><code class="file">spum/round.mjs</code></a></td><td>판 생성</td>
-            <td>재시도 루프(최대 400회), 거짓 방패 심는 조건</td></tr>
-        <tr><td><a class="file" style="text-decoration:none" href="https://github.com/tigermorning/who-ate-my-cheesecake/blob/feat/character-system/spum/memory.mjs" target="_blank" rel="noopener"><code class="file">spum/memory.mjs</code></a></td><td>기억·소문</td>
-            <td><code class="file">remember()</code> 출처 병합, <code class="file">gossipOnce()</code></td></tr>
-        <tr><td><a class="file" style="text-decoration:none" href="https://github.com/tigermorning/who-ate-my-cheesecake/blob/feat/character-system/spum/dialogue.mjs" target="_blank" rel="noopener"><code class="file">spum/dialogue.mjs</code></a></td><td>대화 생성·검증</td>
-            <td><code class="file">classifyIntent()</code>, <code class="file">violations()</code>,
-            플레이어 캐릭터 호출 시 <code class="file">throw</code>하는 방어 6곳</td></tr>
-        <tr><td><a class="file" style="text-decoration:none" href="https://github.com/tigermorning/who-ate-my-cheesecake/blob/feat/character-system/spum/serve.mjs" target="_blank" rel="noopener"><code class="file">spum/serve.mjs</code></a></td><td>서버</td>
-            <td><a href="#case-103261a"><code class="file">normalizeSamBody()</code></a>, rate limit, <code class="file">/api/import</code> 배포 가드</td></tr>
-        <tr><td><a class="file" style="text-decoration:none" href="https://github.com/tigermorning/who-ate-my-cheesecake/blob/feat/character-system/spum/play.html" target="_blank" rel="noopener"><code class="file">spum/play.html</code></a></td><td>UI·렌더링</td>
-            <td><a href="#case-49fe44a"><code class="file">harvest()</code></a>(증언판 파싱), <code class="file">verdict()</code>(승패 판정),
-            <a href="#case-07fb774"><code class="file">updateGossip()</code></a></td></tr>
-        <tr><td><a class="file" style="text-decoration:none" href="https://github.com/tigermorning/who-ate-my-cheesecake/blob/feat/character-system/spum/harness.mjs" target="_blank" rel="noopener"><code class="file">spum/harness.mjs</code></a></td><td>검증</td>
-            <td><code class="file">node spum/harness.mjs --live</code> 로 SAM 실호출 검증 재현 가능</td></tr>
-        <tr><td><a class="file" style="text-decoration:none" href="https://github.com/tigermorning/who-ate-my-cheesecake/blob/feat/character-system/spum/verify-dialogue-fixes.mjs" target="_blank" rel="noopener"><code class="file">spum/verify-dialogue-fixes.mjs</code></a></td><td>회귀 검증</td>
-            <td>인젝션 가드·harvest 정밀도/재현율(11케이스)을 실제 SAM 호출로 재현(<a href="#case-injection-guard">§06</a>)</td></tr>
-        <tr><td><a class="file" style="text-decoration:none" href="https://github.com/tigermorning/who-ate-my-cheesecake/blob/feat/character-system/spum/cast.json" target="_blank" rel="noopener"><code class="file">spum/cast.json</code></a></td><td>캐릭터 정본 (<a href="#case-5e11fba">저장소 손상 사고</a> 있었음)</td>
-            <td>SPUM Cast 스키마 + <code class="file">persona.profile</code></td></tr>
-      </table>
-    </div>
+    <h2><span class="no">03</span> 저장소</h2>
+    <div class="lede"><a href="https://github.com/tigermorning/who-ate-my-cheesecake" target="_blank" rel="noopener">github.com/tigermorning/who-ate-my-cheesecake</a>
+    — 공개 저장소입니다. 파일·함수 링크는 각 절 본문 안에 인라인으로 있습니다
+    (예: <a href="#case-103261a"><code class="file">normalizeSamBody()</code></a>).</div>
   </section>
 
   <section id="principles">
