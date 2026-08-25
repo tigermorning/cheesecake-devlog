@@ -566,9 +566,8 @@
     </p>
     <div style="display:flex; flex-direction:column; gap:12px; font-size:13.5px; margin-bottom:28px;">
       <div>
-        <span class="pill danger">미해결 3건</span> — 아직 안 풀림
+        <span class="pill danger">미해결 2건</span> — 아직 안 풀림
         <div style="margin-top:4px; color:var(--ink-dim)">
-          <a href="#case-solo-dialogue">혼자 대화체로 말하는 문제</a> ·
           <a href="#case-classify-expectation">walkable/block 자동화 실패(원인 불명)</a> ·
           <a href="#case-map-wall">건물을 들락날락하는 기능(미구현)</a>
         </div>
@@ -585,8 +584,9 @@
         </div>
       </div>
       <div>
-        <span class="pill accent2">해결됨 8건</span> — 이 프로젝트에서 실제 SAM 재호출·표본 검증까지 마침
+        <span class="pill accent2">해결됨 9건</span> — 이 프로젝트에서 실제 재현·검증까지 마침
         <div style="margin-top:4px; color:var(--ink-dim)">
+          <a href="#case-solo-dialogue">혼자 대화체로 말하는 문제</a> ·
           <a href="#case-harvest-sam">증언판 오귀속(구조 전환)</a> ·
           <a href="#case-103261a">SPUM→SAM 404</a> ·
           <a href="#case-server-crash">서버 전체 다운</a> ·
@@ -597,39 +597,6 @@
           <a href="#case-violation-tradeoff">위반 오탐·누락</a>
         </div>
       </div>
-    </div>
-
-    <div class="case" id="case-solo-dialogue">
-      <div class="head">
-        <span class="hash">미해결</span>
-        <span class="sym">혼자 있는 캐릭터가 대화체로 말하는 문제 — 아직 안 고쳐졌다</span>
-      </div>
-      <div class="body">
-        <div>
-          <div class="lbl">증상</div>
-          <p>청자가 없는 캐릭터가 마치 누군가에게 말을 거는 것처럼 대화체 문장을 뱉는다. 생각(내적
-          독백)을 나타내야 할 생각풍선도 말풍선과 똑같은 대화체로 나온다 — "혼자 중얼거림"이 아니라
-          "누군가에게 말하는 것"처럼 읽힌다.</p>
-        </div>
-        <div>
-          <div class="lbl">시도한 조치 · 남은 문제</div>
-          <p>아래 <a href="#case-fbc14aa">fbc14aa</a>·<a href="#case-25faabd">25faabd</a> 커밋에서
-          <code class="file">holdUntil</code>(대화 중 NPC 이동 보류)과 <code class="file">thought</code>
-          프레이밍(청자 없을 때 혼잣말투로 전환)을 넣었지만, <strong>실제 플레이에서는 이 문제가
-          여전히 나타난다</strong> — 완전히 고쳐지지 않았다.</p>
-        </div>
-      </div>
-      <div class="card mono" style="font-size:12.5px; line-height:1.9; color:var(--ink-dim); margin-top:14px;">
-        예시(증상 재구성 — 실제 캡처 아님): 미누가 화면에 혼자 서 있다. 옆엔 아무도 없다.<br>
-        미누 말풍선: <span style="color:var(--danger)">"그래서 그다음엔 어떻게 됐어?"</span>
-        <span style="color:var(--ink-faint)">← 누구한테 묻는 거야? 상대가 없다.</span><br>
-        기대하는 모습: 같은 상황이면 <span style="color:var(--accent2)">"음... 그다음엔 어떻게 됐더라"</span>
-        같은 혼잣말투로 나와야 한다.
-      </div>
-      <p style="margin-top:14px; font-size:13.5px; color:var(--ink-dim)"><strong>이게 가장 중요한
-      미해결 문제인 이유</strong> — 순순팩토리가 요구한 건 "멋있는 게임"이 아니라 "interactive한
-      게임"이다. 대화가 실제로 자연스럽고 상호작용처럼 느껴지는지가 핵심 평가 기준인데, 정확히
-      그 지점(말투가 대화체인지 독백체인지의 구분)이 아직 안 풀렸다.</p>
     </div>
 
     <div class="case" id="case-classify-expectation">
@@ -850,6 +817,45 @@
         <code style="background:none;padding:0">blocksMovement: false</code>
         <span style="color:var(--danger)">← 이름은 그럴싸한데 이 테마에선 전부 거짓, 믿으면 안 됨</span>
       </div>
+    </div>
+
+    <div class="case fixed" id="case-solo-dialogue">
+      <div class="head">
+        <span class="hash">a979752</span>
+        <span class="sym">혼자 있는 캐릭터가 대화체로 말하는 문제 — 세 번째 경로를 찾아 고침</span>
+      </div>
+      <div class="body">
+        <div>
+          <div class="lbl">증상</div>
+          <p>청자가 없는 캐릭터가 마치 누군가에게 말을 거는 것처럼 대화체 문장을 뱉는다. 생각(내적
+          독백)을 나타내야 할 생각풍선도 말풍선과 똑같은 대화체로 나온다 — "혼자 중얼거림"이 아니라
+          "누군가에게 말하는 것"처럼 읽힌다.</p>
+        </div>
+        <div>
+          <div class="lbl">원인 · 조치</div>
+          <p><a href="#case-fbc14aa">fbc14aa</a>·<a href="#case-25faabd">25faabd</a>는 각각 "NPC가
+          시각 전환에 끌려감"과 "NPC-NPC 소문"만 고쳤다 — 정작 재현되던 건 <strong>플레이어
+          자신과의 대화</strong>였다. <code class="file">send()</code>가 SAM 응답(수 초 소요)을
+          기다리는 동안 플레이어가 대화를 닫거나 다른 NPC로 넘어가도, 응답이 도착하면
+          <code class="file">say()</code>가 무조건 대화체 말풍선을 띄웠다 — 그 세 번째 경로는
+          이전 두 수정 어느 쪽도 안 건드렸다. <code class="file">say()</code>에
+          <code class="file">showBubble</code> 매개변수를 추가해, 응답 도착 시점에 그 대화가
+          더는 "지금 보고 있는 대화"가 아니면(<code class="file">chatOpen() && cur===target</code>
+          재확인) 말풍선만 건너뛰고 대화 기록·증언판 반영은 그대로 하게 했다.</p>
+        </div>
+      </div>
+      <div class="card mono" style="font-size:12.5px; line-height:1.9; color:var(--ink-dim); margin-top:14px;">
+        검증(브라우저에서 실제 <code style="background:none;padding:0">say()</code> 직접 호출) —
+        <span style="color:var(--danger)">showBubble:false</span>로 부르면 말풍선(<code style="background:none;padding:0">bubbles[id]</code>)은
+        안 바뀌고, 대화 기록(<code style="background:none;padding:0">chat[id]</code>)엔 그대로 남음<br>
+        <span style="color:var(--accent2)">showBubble:true</span>로 부르면 말풍선 정상 갱신 —
+        확인됨. <span style="color:var(--ink-faint)">단, 실제 UI 클릭으로 SAM 응답 도중에 다른
+        NPC로 넘어가는 그 순간의 타이밍까지 재현한 건 아니다 — say() 자체의 동작만 직접
+        검증했다.</span>
+      </div>
+      <p style="margin-top:14px; font-size:13.5px; color:var(--ink-dim)"><strong>왜 중요했나</strong>
+      — 순순팩토리가 요구한 건 "멋있는 게임"이 아니라 "interactive한 게임"이다. 대화가 실제로
+      자연스럽고 상호작용처럼 느껴지는지가 핵심 평가 기준이었다.</p>
     </div>
 
     <div class="case fixed" id="case-harvest-sam">
@@ -1138,9 +1144,11 @@
       </table>
     </div>
     <p style="font-size:13px; color:var(--ink-faint); margin-top:10px">이 표는 구조적 안정성만
-    검증한다 — 길찾기가 막히지 않는지, 버튼이 눌리는지, 로직이 안 깨지는지. 대화가 실제로
-    자연스럽고 interactive한지는 별개 문제이고, 그건 아직 안 풀렸다
-    (<a href="#case-solo-dialogue">§06 · 혼자 있는 캐릭터가 대화체로 말하는 문제</a>).</p>
+    검증한다 — 길찾기가 막히지 않는지, 버튼이 눌리는지, 로직이 안 깨지는지. "대화가 실제로
+    자연스럽고 interactive한지"는 별개 문제다 — 그중 가장 눈에 띄던 사례(혼자 있는 캐릭터가
+    대화체로 말하는 문제)는 <a href="#case-solo-dialogue">§06에서 원인을 찾아 고쳤다</a>. 다만
+    이 표의 다른 항목들과 달리 대화 자연스러움 자체를 자동으로 채점하는 표준 지표는 없다 —
+    지금 남은 미해결 2건은 대화가 아니라 지도/충돌 쪽이다.</p>
   </section>
 
 
