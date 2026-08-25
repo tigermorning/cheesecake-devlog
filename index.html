@@ -556,11 +556,11 @@
   <section id="troubles">
     <h2><span class="no">06</span> 실제로 부딪힌 문제</h2>
     <p style="font-size:13.5px; margin-bottom:24px;">
-      <span class="pill danger">미해결 2건</span>
+      <span class="pill danger">미해결 3건</span> — 아래 순서대로 나열됨:
       <a href="#case-solo-dialogue">혼자 대화체로 말하는 문제</a> ·
+      <a href="#case-classify-expectation">walkable/block 자동화 실패(원인 불명)</a> ·
       <a href="#case-map-wall">건물을 들락날락하는 기능(미구현)</a>
-      — 나머지는 전부 원인·조치가 확인된 <span class="pill accent2">해결됨</span> 케이스다
-      (좌측 테두리 색으로도 구분된다).
+      — 나머지 12건은 전부 원인·조치가 확인된 <span class="pill accent2">해결됨</span> 케이스다.
     </p>
 
     <div class="case" id="case-solo-dialogue">
@@ -594,6 +594,67 @@
       미해결 문제인 이유</strong> — 순순팩토리가 요구한 건 "멋있는 게임"이 아니라 "interactive한
       게임"이다. 대화가 실제로 자연스럽고 상호작용처럼 느껴지는지가 핵심 평가 기준인데, 정확히
       그 지점(말투가 대화체인지 독백체인지의 구분)이 아직 안 풀렸다.</p>
+    </div>
+
+    <div class="case" id="case-classify-expectation">
+      <div class="head">
+        <span class="hash">미해결</span>
+        <span class="sym">Object Editor의 AI 분류가 walkable/block까지 자동으로 이어줄 거라 기대했는데 안 됐다</span>
+      </div>
+      <div class="body">
+        <div>
+          <div class="lbl">기대</div>
+          <p>Object Editor의 Classify 단계는 타일마다 category(<code class="file">floor</code> /
+          <code class="file">obstacle_blocking</code> / <code class="file">obstacle_slowing</code> /
+          <code class="file">item</code> / <code class="file">decoration</code>)와 movement
+          (<code class="file">passable</code> / <code class="file">blocked</code> /
+          <code class="file">slowed</code> / <code class="file">none</code>)를 AI가 매겨준다
+          (<code class="file">docs/SPUM_RESOURCE_AUDIT.md</code>). 벽 재질로 만든 오브젝트는
+          자동으로 block, 바닥 재질은 walkable로 이어질 거라 예상했고, Claude 확장(브라우저
+          자동화)으로 SPUM Studio를 조작해 이 과정 전체를 자동화하려 했다.</p>
+        </div>
+        <div>
+          <div class="lbl">실제 · 원인 미확인</div>
+          <p>기대만큼 안 됐다 — 클로드가 처리하지 못한 부분은 결국 SPUM Studio를 직접 손으로
+          조작해 walkable/block을 지정했다(그 결과물이 바로 아래 <a href="#case-grid-inversion">
+          §기반 버그 2개</a>에서 "내가 직접 칠한 obstacle 값"이다). <strong>정확히 어느 지점에서
+          막혔는지는 확인하지 않았다</strong> — (a) Classify의 AI 분류 정확도 자체가 낮았는지,
+          (b) 브라우저 자동화가 타일 개수만큼 끝까지 못 돌았는지, (c) Object의 category/movement 값이 애초에 Map Editor의 NAV 레이어에
+          자동으로 안 이어지는 구조였는지 — 셋 다 가능성만 있고 재현·검증은 안 했다.</p>
+        </div>
+      </div>
+      <div class="card mono" style="font-size:12.5px; line-height:1.9; color:var(--ink-dim); margin-top:14px;">
+        기대했던 것: 벽 타일 이미지 하나를 Classify에 넣으면 →
+        <code style="background:none;padding:0">{"category":"obstacle_blocking","movement":"blocked"}</code>
+        가 자동으로 나오고, 그 값이 곧 Map Editor의 벽 판정이 됨<br>
+        실제로 한 일: 이 자동 연결을 못 믿어서, 결과적으로 <strong>Map Editor에서 칸마다
+        walkable/block을 직접 클릭해서 칠함</strong>
+      </div>
+    </div>
+
+    <div class="case" id="case-map-wall">
+      <div class="head">
+        <span class="hash">미해결</span>
+        <span class="sym">건물을 들락날락하는 기능 — 끝내 구현하지 못했다</span>
+      </div>
+      <div class="body">
+        <div>
+          <div class="lbl">목표</div>
+          <p>플레이어가 건물 안팎을 자유롭게 들락날락할 수 있게 만드는 것이 원래 목표였다.</p>
+        </div>
+        <div>
+          <div class="lbl">막힌 지점 · 결과</div>
+          <p>AI로 그린 평면도는 방 입구에 문처럼 생긴 벽 토막이 남는데, 그림만 봐서는 어디가
+          진짜 문이고 어디가 벽인지 구분이 안 됐다(§02의 img2img 정사각형 제약과 같은 계열
+          문제). 이 통행 판정을 끝내 완전히 풀지 못해 이 기능 자체를 구현하지 못한 채 남았다.</p>
+        </div>
+      </div>
+      <div class="card mono" style="font-size:12.5px; line-height:1.9; color:var(--ink-dim); margin-top:14px;">
+        예: 방 입구를 그려달라고 하면 AI가 <strong>진짜 뚫린 문</strong>이 아니라
+        <strong>문 모양의 벽 그림</strong>을 그린다 — 사람 눈엔 문처럼 보여도, 게임 입장에선
+        그냥 "막힌 칸"과 똑같은 벽이라 캐릭터가 못 지나간다. 그림만 보고 "여기는 문이니까 뚫어도
+        된다"를 코드로 구분할 방법을 못 찾았다.
+      </div>
     </div>
 
     <div class="case fixed">
@@ -811,42 +872,6 @@
       </div>
     </div>
 
-    <div class="case" id="case-classify-expectation">
-      <div class="head">
-        <span class="hash">원인 미확인</span>
-        <span class="sym">Object Editor의 AI 분류가 walkable/block까지 자동으로 이어줄 거라 기대했는데 안 됐다</span>
-      </div>
-      <div class="body">
-        <div>
-          <div class="lbl">기대</div>
-          <p>Object Editor의 Classify 단계는 타일마다 category(<code class="file">floor</code> /
-          <code class="file">obstacle_blocking</code> / <code class="file">obstacle_slowing</code> /
-          <code class="file">item</code> / <code class="file">decoration</code>)와 movement
-          (<code class="file">passable</code> / <code class="file">blocked</code> /
-          <code class="file">slowed</code> / <code class="file">none</code>)를 AI가 매겨준다
-          (<code class="file">docs/SPUM_RESOURCE_AUDIT.md</code>). 벽 재질로 만든 오브젝트는
-          자동으로 block, 바닥 재질은 walkable로 이어질 거라 예상했고, Claude 확장(브라우저
-          자동화)으로 SPUM Studio를 조작해 이 과정 전체를 자동화하려 했다.</p>
-        </div>
-        <div>
-          <div class="lbl">실제 · 원인 미확인</div>
-          <p>기대만큼 안 됐다 — 클로드가 처리하지 못한 부분은 결국 SPUM Studio를 직접 손으로
-          조작해 walkable/block을 지정했다(그 결과물이 바로 아래 <a href="#case-grid-inversion">
-          §기반 버그 2개</a>에서 "내가 직접 칠한 obstacle 값"이다). <strong>정확히 어느 지점에서
-          막혔는지는 확인하지 않았다</strong> — (a) Classify의 AI 분류 정확도 자체가 낮았는지,
-          (b) 브라우저 자동화가 타일 개수만큼 끝까지 못 돌았는지, (c) Object의 category/movement 값이 애초에 Map Editor의 NAV 레이어에
-          자동으로 안 이어지는 구조였는지 — 셋 다 가능성만 있고 재현·검증은 안 했다.</p>
-        </div>
-      </div>
-      <div class="card mono" style="font-size:12.5px; line-height:1.9; color:var(--ink-dim); margin-top:14px;">
-        기대했던 것: 벽 타일 이미지 하나를 Classify에 넣으면 →
-        <code style="background:none;padding:0">{"category":"obstacle_blocking","movement":"blocked"}</code>
-        가 자동으로 나오고, 그 값이 곧 Map Editor의 벽 판정이 됨<br>
-        실제로 한 일: 이 자동 연결을 못 믿어서, 결과적으로 <strong>Map Editor에서 칸마다
-        walkable/block을 직접 클릭해서 칠함</strong>
-      </div>
-    </div>
-
     <div class="case fixed" id="case-grid-inversion">
       <div class="head">
         <span class="hash">기반 버그 2개</span>
@@ -981,31 +1006,7 @@
       </div>
     </div>
 
-    <div class="case" id="case-map-wall">
-      <div class="head">
-        <span class="hash">미구현</span>
-        <span class="sym">건물을 들락날락하는 기능 — 끝내 구현하지 못했다</span>
-      </div>
-      <div class="body">
-        <div>
-          <div class="lbl">목표</div>
-          <p>플레이어가 건물 안팎을 자유롭게 들락날락할 수 있게 만드는 것이 원래 목표였다.</p>
         </div>
-        <div>
-          <div class="lbl">막힌 지점 · 결과</div>
-          <p>AI로 그린 평면도는 방 입구에 문처럼 생긴 벽 토막이 남는데, 그림만 봐서는 어디가
-          진짜 문이고 어디가 벽인지 구분이 안 됐다(§02의 img2img 정사각형 제약과 같은 계열
-          문제). 이 통행 판정을 끝내 완전히 풀지 못해 이 기능 자체를 구현하지 못한 채 남았다.</p>
-        </div>
-      </div>
-      <div class="card mono" style="font-size:12.5px; line-height:1.9; color:var(--ink-dim); margin-top:14px;">
-        예: 방 입구를 그려달라고 하면 AI가 <strong>진짜 뚫린 문</strong>이 아니라
-        <strong>문 모양의 벽 그림</strong>을 그린다 — 사람 눈엔 문처럼 보여도, 게임 입장에선
-        그냥 "막힌 칸"과 똑같은 벽이라 캐릭터가 못 지나간다. 그림만 보고 "여기는 문이니까 뚫어도
-        된다"를 코드로 구분할 방법을 못 찾았다.
-      </div>
-    </div>
-    </div>
   </section>
 
   <section id="tests">
