@@ -301,9 +301,13 @@
       대화 예산 18회 안에 범인·시각·목격자를 지목한다.
         <ul style="margin-top:8px">
           <li><strong>방패</strong> — 여섯 명 전원이 "안 먹은 이유"를 하나씩 갖는다. 55% 확률로 거짓이며,
-          거짓이면 그걸 깰 실마리(그 사람을 실제로 본 목격자)가 판 안에 반드시 심어진다.</li>
+          거짓이면 그걸 깰 실마리(그 사람을 실제로 본 목격자)가 판 안에 반드시 심어진다.
+          <span style="color:var(--ink-faint)">예: 미누의 방패 "배불러서 안 먹었다"가 거짓이면,
+          정작 그 시각 미누를 부엌에서 본 목격자가 판 안 어딘가에 준비돼 있다.</span></li>
           <li><strong>범인의 알리바이 거짓말</strong> — 범인은 범행 시각의 진짜 자리(부엌)를 절대
-          말하지 않고, "그 시각엔 딴 방에 있었다"는 거짓 알리바이를 댄다.</li>
+          말하지 않고, "그 시각엔 딴 방에 있었다"는 거짓 알리바이를 댄다.
+          <span style="color:var(--ink-faint)">예: 진범 코코가 실제론 21시에 부엌에 있었어도,
+          "21시엔 거실에 있었어"라고만 말한다.</span></li>
           <li><strong>공범의 거짓 목격</strong> — 범인과 단둘이 마주친 시각이 있는 NPC가 포섭
           "후보"가 되지만, 자동으로 공범이 되지는 않는다. 조건에 맞는 후보가 있어도 60% 확률로만
           포섭이 시도되고(<code class="file">round.mjs:113</code>, <code class="file">r() &lt; 0.6</code>),
@@ -359,6 +363,15 @@
       → <span style="color:var(--accent)">SAM 호출</span> (claude-sonnet-4.6, 서버가 대리 · 키는 브라우저에 안 내려감)<br>
       → <span style="color:var(--ink)">violations()</span> — 지어낸 시각·장소·인물 없는지 검사, 위반 시 1회 재생성<br>
       → <span style="color:var(--ink)">remember() / gossipOnce()</span> — 대화 결과를 기억에 남기고 전파
+    </div>
+    <div class="card mono" style="font-size:12.5px; line-height:2; color:var(--ink-dim); overflow-x:auto; margin-top:-4px;">
+      <span style="color:var(--ink-faint)">예시로 값 채워보면 —</span><br>
+      입력: "미누야, 21시에 어디 있었어?"<br>
+      → classifyIntent() = <code style="background:none;padding:0">ASK_WHEREABOUTS</code><br>
+      → factSheet() = "미누는 21시엔 텃밭에 있었다(직접 경험)"<br>
+      → SAM 응답: "나 21시엔 텃밭에 있었어"<br>
+      → violations() = 통과(텃밭이 미누의 실제 승인된 위치라서)<br>
+      → remember() = 없음(자기 얘기라 새 기억 추가 안 함, 이미 아는 사실)
     </div>
 
     <h3>SAM 연동 — <code class="file">serve.mjs</code></h3>
@@ -862,6 +875,14 @@
           것. 어긋남 0.</p>
         </div>
       </div>
+      <div class="card mono" style="font-size:12.5px; line-height:1.9; color:var(--ink-dim); margin-top:14px;">
+        부엌 칸 하나, 실제로는 벽 — Studio 저장값 <code style="background:none;padding:0">1</code>
+        ("1=장애물")<br>
+        <span style="color:var(--danger)">수정 전</span> 그 값 그대로 <code style="background:none;padding:0">setGrid(1)</code> 호출
+        → 런타임은 "1=걸을 수 있음"으로 읽음 → 캐릭터가 벽을 뚫고 지나감<br>
+        <span style="color:var(--accent2)">수정 후</span> 넘기기 전에 반전 → <code style="background:none;padding:0">setGrid(0)</code> 호출
+        → 런타임도 "막힘"으로 읽음
+      </div>
     </div>
 
     <div class="case fixed" id="case-culprit-confession">
@@ -884,6 +905,13 @@
           승인 목록 둘 다에서, 범행 시각의 진짜 자리를 알리바이 거짓말로 바꿔치기했다 — 애초에
           진짜 자리를 볼 수도, "알고 있다"고 인정받을 수도 없게 했다. 시드 지정 재현으로 확인.</p>
         </div>
+      </div>
+      <div class="card mono" style="font-size:12.5px; line-height:1.9; color:var(--ink-dim); margin-top:14px;">
+        코코가 범인, 진짜 범행 시각은 21시·부엌<br>
+        <span style="color:var(--danger)">수정 전</span> 코코 프롬프트: "21시엔 부엌에 있었다(비밀,
+        말하지 마라)" <span style="color:var(--ink-faint)">← 지시만 있고 진짜 정보는 그대로 보임</span><br>
+        <span style="color:var(--accent2)">수정 후</span> 코코 프롬프트: "21시엔 거실에 있었다"
+        <span style="color:var(--ink-faint)">(알리바이 거짓말로 통째 교체 — 진짜 자리는 코코도 못 봄)</span>
       </div>
     </div>
 
@@ -944,6 +972,13 @@
           100%</strong>를 확인했다.</p>
         </div>
       </div>
+      <div class="card mono" style="font-size:12.5px; line-height:1.9; color:var(--ink-dim); margin-top:14px;">
+        입력: "21시엔 텃밭, 22시엔 거실이었어" (실제 승인된 조합: 21시-텃밭 · 22시-거실만)<br>
+        <span style="color:var(--danger)">수정 전</span> 21시-거실이라는 <strong>말한 적도 없는
+        조합</strong>까지 만들어서 "거짓말"로 오판<br>
+        <span style="color:var(--accent2)">수정 후</span> "21시엔 텃밭"과 "22시엔 거실"을 따로
+        떼어 각자만 검사 → 둘 다 참으로 정확히 판정
+      </div>
     </div>
 
     <div class="case" id="case-map-wall">
@@ -963,6 +998,13 @@
           문제). 이 통행 판정을 끝내 완전히 풀지 못해 이 기능 자체를 구현하지 못한 채 남았다.</p>
         </div>
       </div>
+      <div class="card mono" style="font-size:12.5px; line-height:1.9; color:var(--ink-dim); margin-top:14px;">
+        예: 방 입구를 그려달라고 하면 AI가 <strong>진짜 뚫린 문</strong>이 아니라
+        <strong>문 모양의 벽 그림</strong>을 그린다 — 사람 눈엔 문처럼 보여도, 게임 입장에선
+        그냥 "막힌 칸"과 똑같은 벽이라 캐릭터가 못 지나간다. 그림만 보고 "여기는 문이니까 뚫어도
+        된다"를 코드로 구분할 방법을 못 찾았다.
+      </div>
+    </div>
     </div>
   </section>
 
