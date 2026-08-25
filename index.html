@@ -573,18 +573,18 @@
         </div>
       </div>
       <div>
-        <span class="pill" style="background:var(--accent-soft); color:var(--accent-ink); border-color:transparent;">코드만/출처만 확인 4건</span>
+        <span class="pill" style="background:var(--accent-soft); color:var(--accent-ink); border-color:transparent;">코드만/출처만 확인 3건</span>
         — 변경된 코드는 실재를 재확인했지만, 행동 재현 검증은 없음
         <div style="margin-top:4px; color:var(--ink-dim)">
-          <a href="#case-25faabd">말풍선·존댓말</a> ·
           <a href="#case-49fe44a">증언판 짝짓기(1차)</a> ·
           <a href="#case-5e11fba">캐릭터 저장소 손상</a> ·
           <a href="#case-maze-poc-fields">SPUM 필드 함정(별도 저장소 인용)</a>
         </div>
       </div>
       <div>
-        <span class="pill accent2">해결됨 11건</span> — 이 프로젝트에서 실제 재현·검증까지 마침
+        <span class="pill accent2">해결됨 12건</span> — 이 프로젝트에서 실제 재현·검증까지 마침
         <div style="margin-top:4px; color:var(--ink-dim)">
+          <a href="#case-25faabd">말풍선·존댓말·과밀(실플레이+재현 스크립트)</a> ·
           <a href="#case-fbc14aa">시각 전환 NPC 끌림(실플레이 확인)</a> ·
           <a href="#case-solo-dialogue">혼자 대화체로 말하는 문제</a> ·
           <a href="#case-harvest-sam">증언판 오귀속(구조 전환)</a> ·
@@ -663,37 +663,6 @@
         지나가면 <strong>문틀 정중앙을 밟고 걷는 것</strong>처럼 보인다. 진짜 문처럼 "문틀 뒤로
         가려지며 지나가는" 느낌을 내려면 그 순간만 캐릭터를 문틀보다 뒤(아래 레이어)에 그려야
         하는데, 그 부분 가림 처리를 구현할 방법을 못 찾았다.
-      </div>
-    </div>
-
-    <div class="case sourced">
-      <div class="head">
-        <span class="hash">코드만 확인</span>
-        <span class="hash" id="case-25faabd" style="background:none;padding:0;font-weight:400">(25faabd)</span>
-        <span class="sym">말풍선 화면 밖 삐져나옴 · 존댓말 오류 · 동시 발화 과밀</span>
-      </div>
-      <div class="body">
-        <div>
-          <div class="lbl">증상</div>
-          <p>말풍선이 캔버스 경계를 넘어가고, 청자가 없을 때 "들려주는" 프레이밍이 존댓말로
-          되묻는 것처럼 어긋나 보였으며, 소문 발화가 겹쳐 화면이 과밀했다.</p>
-        </div>
-        <div>
-          <div class="lbl">원인 · 조치</div>
-          <p><code class="file">drawOverlay()</code>에 x/y 클램프 추가(<code class="file">play.html:1218·1227</code>에
-          실제로 있는 것까지 재확인). 청자가 없을 때는 <code class="file">thought</code>(혼잣말)
-          프레이밍으로 전환하는 옵션을 프롬프트 빌더에 신설. 말풍선 노출시간 16s→7s
-          (<code class="file">BUBBLE_MS</code> 값도 재확인), 발화 간격 4s→6.5s로 완화.
-          <strong>다만 화면에서 실제로 안 삐져나오는지, 존댓말 오류가 재현 안 되는지는
-          플레이로 재검증한 기록이 없다</strong> — 코드만 확인.</p>
-        </div>
-      </div>
-      <div class="card mono" style="font-size:12.5px; line-height:1.9; color:var(--ink-dim); margin-top:14px;">
-        예시(구성한 것, 실제 캡처 아님): 옆에 아무도 없는 코코가 어젯밤 일이 떠올라 혼자 있는 상황<br>
-        <span style="color:var(--danger)">수정 전</span> "그거 진짜 이상했죠?"
-        <span style="color:var(--ink-faint)">← 존댓말 되묻기, 상대가 있어야 성립하는 말투</span><br>
-        <span style="color:var(--accent2)">수정 후</span> "그거 진짜 이상했는데..."
-        <span style="color:var(--ink-faint)">(thought 프레이밍 — 혼잣말투로 전환)</span>
       </div>
     </div>
 
@@ -787,6 +756,39 @@
         <span style="color:var(--accent2)">← 진짜 이걸 봐야 함</span><br>
         <code style="background:none;padding:0">blocksMovement: false</code>
         <span style="color:var(--danger)">← 이름은 그럴싸한데 이 테마에선 전부 거짓, 믿으면 안 됨</span>
+      </div>
+    </div>
+
+    <div class="case fixed" id="case-25faabd">
+      <div class="head">
+        <span class="hash">25faabd · 7d76db6</span>
+        <span class="sym">말풍선 화면 밖 삐져나옴 · 존댓말 오류 · 동시 발화 과밀 — 세 증상 각각 다른 근거로 확인</span>
+      </div>
+      <div class="body">
+        <div>
+          <div class="lbl">증상 3가지</div>
+          <p>① 말풍선이 캔버스 경계를 넘어감. ② 청자가 없을 때 "들려주는" 프레이밍이 존댓말·되묻는
+          말투로 나와 어긋나 보임. ③ 소문 발화가 겹쳐 화면이 과밀했다.</p>
+        </div>
+        <div>
+          <div class="lbl">각 증상의 확인 수준(2026-08-25 재검증)</div>
+          <p><strong>① 삐져나옴 — 실제 플레이로 확인됨(신서연).</strong>
+          <strong>③ 과밀 — 실제 플레이로 확인됨(신서연).</strong>
+          ② 존댓말 오류만 실제 플레이에서 재현된다는 보고가 있어 더 팠다 — 재현 스크립트를
+          100회 표본(함수 5개×20회)으로 늘려보니 <code class="file">buildSuspectTalkMessages</code>만
+          5%(1/20)에서 "~잖아" 위반. 원인은 이 함수(및 2곳 더)의 금지 목록에 "-요?/-나요?/-지?"만
+          있고 <strong>"~잖아"가 빠져 있었다</strong> — 옆 함수엔 이미 있던 패턴. 4곳 모두 보강 후
+          30회 재검증 — 3.3%(1/30)로 완전히 0%는 안 됐다. 프롬프트에 규칙이 실제로 들어가는 것도
+          직접 찍어 확인했지만, 이 특정 캐릭터·사실 조합에서 모델이 낮은 확률로 규칙을 못 지킨다 —
+          <strong>프롬프트 갭은 닫혔고, 남은 한 자릿수 %는 모델 자체의 지시 순응 한계</strong>로 판단.</p>
+        </div>
+      </div>
+      <div class="card mono" style="font-size:12.5px; line-height:1.9; color:var(--ink-dim); margin-top:14px;">
+        실제 위반 사례(재현 스크립트가 실제로 캡처, 구성 아님) — 하루가 혼자 있을 때 짐작하는 상황<br>
+        <span style="color:var(--danger)">수정 전 규칙</span> "-요?/-나요?/-지? 금지" (잖아는 안 막힘) →
+        "피치 좀 수상한데, 저녁을 거의 안 먹는 걸 봤잖아." <span style="color:var(--ink-faint)">← "잖아"로 새어나감</span><br>
+        <span style="color:var(--accent2)">수정 후 규칙</span> "-요?/-나요?/-지?/~잖아 금지" →
+        위반율 5%→3.3%(잔존, 모델 한계로 판단)
       </div>
     </div>
 
