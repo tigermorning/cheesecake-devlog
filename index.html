@@ -386,6 +386,18 @@
     자체 품질 등급 이름을 실어 보내는데, SAM은 그 이름을 모델로 인식하지 못해 <code class="file">Unknown
     model</code> 404를 낸다. <code class="file">normalizeSamBody()</code>가 등급 → 실제 모델명 매핑을
     거쳐 보정한다 — 사례 상세는 <a href="#case-103261a">§실제로 부딪힌 문제 · 커밋 103261a</a> 참고.</p>
+    <p>모델은 상황에 따라 세 단계로 나눠 쓴다 — <code class="file">MODEL.fast</code> =
+    claude-haiku-4-5, <code class="file">MODEL.normal</code> = claude-sonnet-4.6,
+    <code class="file">MODEL.best</code> = claude-opus-4.8(<code class="file">dialogue.mjs:8</code>).
+    호출 지점은 대화 종류별로 7곳이다 — 플레이어↔NPC 대화 <code class="file">ask()</code>,
+    NPC끼리 소문 <code class="file">phraseGossip()</code>, NPC끼리 용의자 잡담
+    <code class="file">phraseSuspectTalk()</code>, 인사말 <code class="file">phraseGreeting()</code>,
+    추격 대사 <code class="file">phraseChase()</code>, 증언판 귀속 판단 <code class="file">harvest()</code>,
+    오프닝 씬 <code class="file">runOpeningLine()</code>. 전부 같은
+    <code class="file">fetch('/api/sam/generate', ...)</code> 패턴을 쓴다 — 브라우저가 SAM을
+    직접 부르지 않는 이유는 <code class="file">SAM_KEY</code>를 서버 <code class="file">.env</code>
+    밖으로 안 내보내기 위해서다(키 보안). CORS가 직접 호출을 막는지는 따로 테스트하지 않아
+    확인 안 됨.</p>
 
     <h3>렌더링 — SPUM 이 그리는 것과 직접 그린 것</h3>
     <div class="grid2">
