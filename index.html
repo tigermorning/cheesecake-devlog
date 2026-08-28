@@ -396,8 +396,10 @@
     오프닝 씬 <code class="file">runOpeningLine()</code>. 전부 같은
     <code class="file">fetch('/api/sam/generate', ...)</code> 패턴을 쓴다 — 브라우저가 SAM을
     직접 부르지 않는 이유는 <code class="file">SAM_KEY</code>를 서버 <code class="file">.env</code>
-    밖으로 안 내보내기 위해서다(키 보안). CORS가 직접 호출을 막는지는 따로 테스트하지 않아
-    확인 안 됨.</p>
+    밖으로 안 내보내기 위해서다(키 보안). 이 SAM 대화 호출 자체가 CORS로 막히는지는 따로
+    테스트하지 않아 확인 안 됨 — 다만 CORS를 실제로 겪은 지점은 따로 있다: SPUM 엔진/월드
+    모듈을 CDN에서 직접 불러오려 할 때였다(<a href="#case-spum-cdn-cors">§06 · SPUM CDN 모듈
+    로드 CORS</a>).</p>
 
     <h3>렌더링 — SPUM 이 그리는 것과 직접 그린 것</h3>
     <div class="grid2">
@@ -658,13 +660,14 @@
         </div>
       </div>
       <div>
-        <span class="pill accent2">해결됨 12건</span> — 이 프로젝트에서 실제 재현·검증까지 마침
+        <span class="pill accent2">해결됨 13건</span> — 이 프로젝트에서 실제 재현·검증까지 마침
         <div style="margin-top:4px; color:var(--ink-dim)">
           <a href="#case-25faabd">말풍선·과밀(실플레이 확인)</a> ·
           <a href="#case-fbc14aa">시각 전환 NPC 끌림(실플레이 확인)</a> ·
           <a href="#case-npc-npc-hold">NPC-NPC 대화 중 정지 안 됨(결정론적 검증, 미커밋)</a> ·
           <a href="#case-harvest-sam">증언판 오귀속(구조 전환)</a> ·
           <a href="#case-103261a">SPUM→SAM 404</a> ·
+          <a href="#case-spum-cdn-cors">SPUM CDN 모듈 로드 CORS</a> ·
           <a href="#case-server-crash">서버 전체 다운</a> ·
           <a href="#case-07fb774">근접 소문 무한반복</a> ·
           <a href="#case-grid-inversion">벽 위 걷기(기반 버그 2개)</a> ·
@@ -1054,6 +1057,49 @@
         거쳐 <code style="background:none;padding:0">{"model":"claude-sonnet-4.6", "messages":[...]}</code>로 보정 →
         빈 model 3/3 · model 없음 3/3 모두 <code style="background:none;padding:0">200</code>
       </div>
+    </div>
+
+    <div class="case fixed" id="case-spum-cdn-cors">
+      <div class="head">
+        <span class="hash">3b4fb3f</span>
+        <span class="sym">SPUM CDN 모듈을 브라우저가 직접 불러오면 CORS로 막힘</span>
+      </div>
+      <div class="body">
+        <div>
+          <div class="lbl">증상</div>
+          <p>게임 엔진 모듈(<code class="file">spum-engine</code>·<code class="file">spum-world</code>·
+          <code class="file">spum-character</code> 등, 캐릭터·월드 런타임·대화 모듈 전부 포함)이
+          <code class="file">spum.soonsoon.ai</code>에만 있는데, 게임은 다른 출처(로컬 서버 /
+          배포 서버)에서 열린다. 브라우저 JS가 그 출처로 직접 <code class="file">import()</code>하면
+          다른 출처(cross-origin) 요청이라 브라우저가 응답을 막는다 — 서버가 실제로 응답을 보내도
+          CORS 허용 헤더가 없으면 스크립트가 그 결과를 못 받는다.</p>
+        </div>
+        <div>
+          <div class="lbl">원인 · 조치</div>
+          <p>CDN 서버를 수정할 방법은 없으니, 게임 서버(<code class="file">serve.mjs</code>)에
+          <code class="file">/spum-cdn/*</code>·<code class="file">/assets/*</code> 라우트를
+          추가해 CDN 응답을 그대로 대신 받아와 돌려주는 프록시로 우회했다
+          (<code class="file">Access-Control-Allow-Origin: *</code> 포함, 커밋 <code class="file">3b4fb3f</code>).
+          브라우저 입장에선 항상 같은 출처(게임 서버)에만 요청하니 CORS 검사 자체가 안 걸린다.
+          이후 <code class="file">play.html</code>의 실제 로드 지점(<code class="file">CharacterPreview.js</code>·
+          <code class="file">StudioSpumWorldRuntime.js</code>)도 전부 <code class="file">/spum-cdn/</code>
+          경로로 불러오도록 바꿨다.</p>
+        </div>
+      </div>
+      <div class="card mono" style="font-size:12.5px; line-height:1.9; color:var(--ink-dim); margin-top:14px;">
+        <span style="color:var(--danger)">수정 전(가정)</span>
+        <code style="background:none;padding:0">import('https://spum.soonsoon.ai/packages/spum-world/...')</code>
+        → 브라우저가 cross-origin으로 판단, CORS 헤더 없어 로드 실패<br>
+        <span style="color:var(--accent2)">수정 후(실제 코드)</span>
+        <code style="background:none;padding:0">import('/spum-cdn/packages/spum-world/runtime/StudioSpumWorldRuntime.js')</code>
+        — 게임 자기 서버 주소라 same-origin, 서버가 CDN 응답을 대신 받아 그대로 전달
+        (<code class="file">play.html:346</code>). <code class="file">test-spum.html</code>로
+        엔진·확장·월드·대화 모듈 5종 로드 확인, 지금 빌드도 이 경로로 실행 중.
+      </div>
+      <p style="margin-top:14px; font-size:13.5px; color:var(--ink-dim)"><strong>참고</strong> —
+      실제 대화 생성 호출(<code class="file">/api/sam/generate</code>)은 애초에 브라우저가 SAM을
+      직접 안 부르고 게임 서버를 거치는 구조라 여긴 CORS 문제 자체가 없었다(<a href="#architecture">
+      §02</a>). CORS를 실제로 겪고 고친 지점은 이 CDN 모듈 로드 하나였다.</p>
     </div>
 
     <div class="case fixed" id="case-server-crash">
